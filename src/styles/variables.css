@@ -1,0 +1,32 @@
+:root {
+    /* Renk Paleti */
+    --color-primary: #1A1A1A;
+    --color-secondary: #D4B5A0;
+    --color-background: #FAFAF8;
+    --color-accent: #B8956F;
+    --color-text-primary: #1A1A1A;
+    --color-text-secondary: #666666;
+    --color-border: #E5E5E5;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-2xl: 4rem;
+    
+    /* Font Sizes */
+    --font-xs: 0.75rem;
+    --font-sm: 0.875rem;
+    --font-base: 1rem;
+    --font-lg: 1.125rem;
+    --font-xl: 1.25rem;
+    --font-2xl: 1.5rem;
+    --font-3xl: 2rem;
+    --font-4xl: 2.5rem;
+    
+    /* Transitions */
+    --transition-base: all 0.3s ease;
+    --transition-fast: all 0.15s ease;
+  }
