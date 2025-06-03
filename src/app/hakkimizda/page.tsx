@@ -117,8 +117,8 @@ export default function AboutPage() {
                 zamansız parçalar üretmekti.
               </p>
               <p className={styles.storyText}>
-                İstanbul'un kalbinde başlayan bu yolculuk, bugün Türkiye'nin 
-                dört bir yanındaki seçkin butiklerle devam ediyor. Her 
+              İstanbul&apos;un kalbinde başlayan bu yolculuk, bugün Türkiye&apos;nin 
+              dört bir yanındaki seçkin butiklerle devam ediyor. Her 
                 koleksiyonumuzda, el emeğinin ve detaylara gösterilen özenin 
                 izlerini görebilirsiniz.
               </p>
@@ -206,8 +206,8 @@ export default function AboutPage() {
           <div className={styles.teamContent}>
             <h2 className={styles.sectionTitle}>Arkasındaki Ekip</h2>
             <p className={styles.teamText}>
-              Luxe Fashion'ın başarısının arkasında, modaya tutkuyla bağlı, 
-              yaratıcı ve özverili bir ekip var. Tasarımcılarımızdan üretim 
+            Luxe Fashion&apos;ın başarısının arkasında, modaya tutkuyla bağlı, 
+            yaratıcı ve özverili bir ekip var. Tasarımcılarımızdan üretim 
               ekibimize, her birimiz aynı vizyonu paylaşıyoruz: Kadınlara 
               kendilerini en iyi hissedecekleri parçaları sunmak.
             </p>
