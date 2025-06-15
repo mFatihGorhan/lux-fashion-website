@@ -1,15 +1,257 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
+}
+
+// Kullanıcı yönetimi
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          Role      @default(ADMIN)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  posts         BlogPost[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+// Hero Section Slider
+model HeroSlide {
+  id            String    @id @default(cuid())
+  title         String
+  subtitle      String
+  description   String
+  imageUrl      String
+  imageAlt      String?
+  gradient      String    // Örn: "linear-gradient(135deg, #1A1A1A 0%, #3A3A3A 100%)"
+  ctaText       String
+  ctaLink       String
+  secondaryCtaText  String?
+  secondaryCtaLink  String?
+  order         Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([order])
+  @@index([isActive])
+}
+
+// Ürün kategorileri
+model Category {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  slug          String    @unique
+  description   String?
+  order         Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  products      Product[]
+  
+  @@index([slug])
+  @@index([order])
+}
+
+// Koleksiyonlar
+model Collection {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  slug          String    @unique
+  description   String?
+  season        String?   // "Yaz 2024", "Kış 2024"
+  order         Int       @default(0)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  products      Product[]
+  
+  @@index([slug])
+  @@index([order])
+}
+
+// Ürünler
+model Product {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  price         String    // "2,850 TL" formatında
+  primaryImage  String
+  primaryImageAlt String?
+  hoverImage    String
+  hoverImageAlt String?
+  badge         String?   // "Yeni", "Limited Edition", "Son Parçalar"
+  colors        Json      // ["#1A1A1A", "#D4B5A0", "#FFFFFF"]
+  order         Int       @default(0)
+  featured      Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id])
+  collectionId  String?
+  collection    Collection? @relation(fields: [collectionId], references: [id])
+  
+  // SEO
+  metaTitle     String?
+  metaDescription String?
+  
+  @@index([slug])
+  @@index([categoryId])
+  @@index([collectionId])
+  @@index([featured])
+  @@index([order])
+}
+
+// Blog Kategorileri
+model BlogCategory {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  slug          String    @unique
+  description   String?
+  order         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  posts         BlogPost[]
+  
+  @@index([slug])
+}
+
+// Blog Etiketleri
+model Tag {
+  id            String    @id @default(cuid())
+  name          String    @unique
+  slug          String    @unique
+  
+  // Relations
+  posts         BlogPost[]
+}
+
+// Blog Yazıları
+model BlogPost {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  excerpt       String    @db.Text
+  content       String    @db.Text
+  coverImage    String
+  coverImageAlt String?
+  readTime      Int       // dakika cinsinden
+  featured      Boolean   @default(false)
+  published     Boolean   @default(false)
+  publishedAt   DateTime?
+  views         Int       @default(0)
+  order         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  categoryId    String
+  category      BlogCategory @relation(fields: [categoryId], references: [id])
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id])
+  tags          Tag[]
+  
+  // SEO
+  metaTitle     String?
+  metaDescription String?
+  
+  @@index([slug])
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([featured])
+  @@index([published])
+  @@index([publishedAt])
+}
+
+// Medya/Görsel Kütüphanesi
+model Media {
+  id            String    @id @default(cuid())
+  url           String
+  publicId      String?   // Cloudinary public ID
+  fileName      String
+  fileSize      Int       // bytes
+  fileType      String    // image/jpeg, image/png
+  width         Int?
+  height        Int?
+  alt           String?
+  caption       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([createdAt])
+}
+
+// İletişim Bilgileri ve Ayarlar
+model Setting {
+  id            String    @id @default(cuid())
+  key           String    @unique
+  value         Json
+  type          SettingType @default(TEXT)
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([key])
+}
+
+enum SettingType {
+  TEXT
+  NUMBER
+  BOOLEAN
+  JSON
+  HTML
+}
+
+// İletişim Form Kayıtları (Opsiyonel - admin panelde görmek için)
+model ContactSubmission {
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  phone         String
+  subject       String
+  message       String    @db.Text
+  isRead        Boolean   @default(false)
+  isReplied     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// Newsletter Aboneleri (Opsiyonel)
+model NewsletterSubscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  isActive      Boolean   @default(true)
+  subscribedAt  DateTime  @default(now())
+  unsubscribedAt DateTime?
+  
+  @@index([email])
+  @@index([isActive])
 }
