@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft, Save, Package, TrendingUp, Image } from 'lucide-react'
 
 interface Category {
   id: string
@@ -100,84 +100,71 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link
-          href="/admin/products"
-          className="p-2 hover:bg-gray-100 rounded"
-        >
-          <ArrowLeft size={20} />
-        </Link>
-        <h1 className="text-2xl font-bold">Yeni Ürün Ekle</h1>
+    <div className="p-6 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <Link
+            href="/admin/products"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft size={20} className="text-gray-600" />
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Yeni Ürün Ekle</h1>
+            <p className="text-gray-600 mt-1">Ürün bilgilerini eksiksiz doldurun</p>
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl">
-        <div className="bg-white rounded-lg shadow p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Basic Information */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <Package size={20} />
+            Temel Bilgiler
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Ürün Adı *
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={handleNameChange}
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Ürün adını girin"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 URL Slug
               </label>
               <input
                 type="text"
                 value={formData.slug}
                 onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Açıklama
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              rows={4}
-              className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Fiyat *
-              </label>
-              <input
-                type="text"
-                value={formData.price}
-                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                placeholder="2,850 TL"
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
+                placeholder="otomatik-oluşturulur"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
+                readOnly
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Kategori *
               </label>
               <select
                 value={formData.categoryId}
                 onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 required
               >
-                <option value="">Kategori Seçin</option>
+                <option value="">Kategori seçin</option>
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -185,11 +172,86 @@ export default function NewProductPage() {
                 ))}
               </select>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ürün Açıklaması
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                rows={4}
+                placeholder="Ürün hakkında detaylı bilgi verin"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Pricing & Settings */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <TrendingUp size={20} />
+            Fiyat ve Ayarlar
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Fiyat *
+              </label>
+              <input
+                type="text"
+                value={formData.price}
+                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                placeholder="2,850 TL"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Badge
+              </label>
+              <input
+                type="text"
+                value={formData.badge}
+                onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
+                placeholder="Yeni, Limited Edition, Son Parçalar"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              />
+            </div>
+
+            <div className="lg:col-span-2">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.featured}
+                    onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                    className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-900">Öne Çıkarılsın</span>
+                    <p className="text-xs text-gray-600">Bu ürün ana sayfada öne çıkan ürünler bölümünde görünür</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Images */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <Image size={20} />
+            Ürün Görselleri
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Ana Görsel URL *
               </label>
               <input
@@ -197,13 +259,14 @@ export default function NewProductPage() {
                 value={formData.primaryImage}
                 onChange={(e) => setFormData(prev => ({ ...prev, primaryImage: e.target.value }))}
                 placeholder="https://example.com/image.jpg"
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">Ana ürün görseli URL'i</p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Hover Görsel URL
               </label>
               <input
@@ -211,52 +274,29 @@ export default function NewProductPage() {
                 value={formData.hoverImage}
                 onChange={(e) => setFormData(prev => ({ ...prev, hoverImage: e.target.value }))}
                 placeholder="https://example.com/hover-image.jpg"
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               />
+              <p className="text-xs text-gray-500 mt-1">Mouse hover'da gösterilecek görsel</p>
             </div>
           </div>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Badge
-            </label>
-            <input
-              type="text"
-              value={formData.badge}
-              onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
-              placeholder="Yeni, Limited Edition, Son Parçalar"
-              className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formData.featured}
-                onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                className="w-4 h-4 text-blue-600"
-              />
-              <span className="text-sm font-medium">Öne Çıkarılsın</span>
-            </label>
-          </div>
-
-          <div className="flex justify-end gap-4 pt-6 border-t">
-            <Link
-              href="/admin/products"
-              className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              İptal
-            </Link>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
-            >
-              <Save size={16} />
-              {loading ? 'Kaydediliyor...' : 'Kaydet'}
-            </button>
-          </div>
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:justify-end">
+          <Link
+            href="/admin/products"
+            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center font-medium"
+          >
+            İptal
+          </Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium transition-all shadow-lg hover:shadow-xl"
+          >
+            <Save size={18} />
+            {loading ? 'Kaydediliyor...' : 'Ürünü Kaydet'}
+          </button>
         </div>
       </form>
     </div>
