@@ -9,8 +9,8 @@ import { z } from 'zod'
 import styles from './login.module.css'
 
 const loginSchema = z.object({
-  email: z.string().email('Geçerli bir email adresi girin'),
-  password: z.string().min(6, 'Şifre en az 6 karakter olmalıdır'),
+  email: z.string().email('Gecerli bir email adresi girin'),
+  password: z.string().min(6, 'Sifre en az 6 karakter olmalidir'),
 })
 
 type LoginForm = z.infer<typeof loginSchema>
@@ -40,21 +40,21 @@ export default function AdminLogin() {
       })
 
       if (result?.error) {
-        setError('Email veya şifre hatalı')
+        setError('Email veya sifre hatali')
         return
       }
 
-      // Session kontrolü
+      // Session kontrolu
       const session = await getSession()
       if (session?.user?.role !== 'ADMIN') {
-        setError('Bu alana erişim yetkiniz yok')
+        setError('Bu alana erisim yetkiniz yok')
         return
       }
 
       router.push('/admin/dashboard')
       router.refresh()
-    } catch (error) {
-      setError('Giriş yapılırken bir hata oluştu')
+    } catch {
+      setError('Giris yapilirken bir hata olustu')
     } finally {
       setIsLoading(false)
     }
@@ -88,7 +88,7 @@ export default function AdminLogin() {
 
           <div className={styles.field}>
             <label htmlFor="password" className={styles.label}>
-              Şifre
+              Sifre
             </label>
             <input
               id="password"
@@ -114,7 +114,7 @@ export default function AdminLogin() {
             disabled={isLoading}
             className={styles.submitButton}
           >
-            {isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+            {isLoading ? 'Giris yapiliyor...' : 'Giris Yap'}
           </button>
         </form>
 

@@ -11,7 +11,7 @@ export default function AdminLayout({
   const pathname = usePathname()
   const { isAdmin, isLoading } = useRequireAdmin()
 
-  // Login sayfas1 için auth kontrolü yapma
+  // Login sayfasi icin auth kontrolu yapma
   if (pathname === '/admin/login') {
     return children
   }
@@ -27,7 +27,7 @@ export default function AdminLayout({
         background: '#1A1A1A',
         color: 'white'
       }}>
-        <div>Yükleniyor...</div>
+        <div>Yukleniyor...</div>
       </div>
     )
   }

@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/lib/auth/hooks'
 import { signOut } from 'next-auth/react'
+import Link from 'next/link'
 
 export default function AdminDashboard() {
   const { user } = useAuth()
@@ -38,7 +39,7 @@ export default function AdminDashboard() {
             color: '#9CA3AF',
             margin: '0.5rem 0 0 0'
           }}>
-            Ho_ geldiniz, {user?.name}
+            Hos geldiniz, {user?.name}
           </p>
         </div>
         
@@ -54,7 +55,7 @@ export default function AdminDashboard() {
             fontSize: '0.875rem'
           }}
         >
-          Ç1k1_ Yap
+          Cikis Yap
         </button>
       </div>
 
@@ -70,12 +71,12 @@ export default function AdminDashboard() {
           borderRadius: '12px'
         }}>
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Ürün Yönetimi
+            Urun Yonetimi
           </h3>
           <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Ürünleri görüntüle, düzenle ve yeni ürün ekle
+            Urunleri goruntule, duzenle ve yeni urun ekle
           </p>
-          <a 
+          <Link 
             href="/admin/products"
             style={{
               color: '#60A5FA',
@@ -83,8 +84,8 @@ export default function AdminDashboard() {
               fontSize: '0.875rem'
             }}
           >
-            Ürünleri Yönet ’
-          </a>
+            Urunleri Yonet â†’
+          </Link>
         </div>
 
         <div style={{
@@ -93,12 +94,12 @@ export default function AdminDashboard() {
           borderRadius: '12px'
         }}>
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Blog Yönetimi
+            Blog Yonetimi
           </h3>
           <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Blog yaz1lar1n1 yönet, yeni içerik ekle
+            Blog yazilarini yonet, yeni icerik ekle
           </p>
-          <a 
+          <Link 
             href="/admin/blog"
             style={{
               color: '#60A5FA',
@@ -106,8 +107,8 @@ export default function AdminDashboard() {
               fontSize: '0.875rem'
             }}
           >
-            Blog Yönet ’
-          </a>
+            Blog Yonet â†’
+          </Link>
         </div>
 
         <div style={{
@@ -116,12 +117,12 @@ export default function AdminDashboard() {
           borderRadius: '12px'
         }}>
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Medya Kütüphanesi
+            Medya Kutuphanesi
           </h3>
           <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Görselleri yükle ve yönet
+            Gorselleri yukle ve yonet
           </p>
-          <a 
+          <Link 
             href="/admin/media"
             style={{
               color: '#60A5FA',
@@ -129,8 +130,8 @@ export default function AdminDashboard() {
               fontSize: '0.875rem'
             }}
           >
-            Medya Yönet ’
-          </a>
+            Medya Yonet â†’
+          </Link>
         </div>
 
         <div style={{
@@ -139,12 +140,12 @@ export default function AdminDashboard() {
           borderRadius: '12px'
         }}>
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Site Ayarlar1
+            Site Ayarlari
           </h3>
           <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Genel site ayarlar1n1 düzenle
+            Genel site ayarlarini duzenle
           </p>
-          <a 
+          <Link 
             href="/admin/settings"
             style={{
               color: '#60A5FA',
@@ -152,8 +153,8 @@ export default function AdminDashboard() {
               fontSize: '0.875rem'
             }}
           >
-            Ayarlar ’
-          </a>
+            Ayarlar â†’
+          </Link>
         </div>
       </div>
 
@@ -163,11 +164,11 @@ export default function AdminDashboard() {
         borderRadius: '12px'
       }}>
         <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-          Kullan1c1 Bilgileri
+          Kullanici Bilgileri
         </h3>
         <div style={{ color: '#9CA3AF', fontSize: '0.875rem' }}>
           <p><strong>Email:</strong> {user?.email}</p>
-          <p><strong>0sim:</strong> {user?.name}</p>
+          <p><strong>Isim:</strong> {user?.name}</p>
           <p><strong>Rol:</strong> {user?.role}</p>
         </div>
       </div>
