@@ -1,175 +1,126 @@
 'use client'
 
 import { useAuth } from '@/lib/auth/hooks'
-import { signOut } from 'next-auth/react'
 import Link from 'next/link'
+import { Package, FileText, Image, Settings, TrendingUp, Users } from 'lucide-react'
+import styles from './dashboard.module.css'
+
+const statsCards = [
+  {
+    title: 'Toplam Urun',
+    value: '24',
+    icon: Package,
+    color: '#60A5FA',
+    href: '/admin/products'
+  },
+  {
+    title: 'Blog Yazisi',
+    value: '12',
+    icon: FileText,
+    color: '#34D399',
+    href: '/admin/blog/posts'
+  },
+  {
+    title: 'Medya Dosyasi',
+    value: '156',
+    icon: Image,
+    color: '#F59E0B',
+    href: '/admin/media'
+  },
+  {
+    title: 'Ziyaretci',
+    value: '1,234',
+    icon: TrendingUp,
+    color: '#EF4444',
+    href: '/admin/settings'
+  }
+]
+
+const quickActions = [
+  {
+    title: 'Yeni Urun Ekle',
+    description: 'Hizlica yeni urun ekleyin',
+    href: '/admin/products/new',
+    icon: Package,
+    color: '#60A5FA'
+  },
+  {
+    title: 'Blog Yazisi Yaz',
+    description: 'Yeni blog yazisi olusturun',
+    href: '/admin/blog/posts/new',
+    icon: FileText,
+    color: '#34D399'
+  },
+  {
+    title: 'Medya Yukle',
+    description: 'Yeni gorseller yukleyin',
+    href: '/admin/media',
+    icon: Image,
+    color: '#F59E0B'
+  },
+  {
+    title: 'Site Ayarlari',
+    description: 'Genel ayarlari duzenleyin',
+    href: '/admin/settings',
+    icon: Settings,
+    color: '#8B5CF6'
+  }
+]
 
 export default function AdminDashboard() {
   const { user } = useAuth()
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: '/' })
-  }
-
   return (
-    <div style={{ 
-      padding: '2rem',
-      color: 'white',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '2rem',
-        paddingBottom: '1rem',
-        borderBottom: '1px solid #374151'
-      }}>
-        <div>
-          <h1 style={{ 
-            fontSize: '2rem', 
-            fontWeight: 'bold',
-            margin: 0,
-            fontFamily: 'var(--font-playfair)'
-          }}>
-            Admin Dashboard
-          </h1>
-          <p style={{ 
-            color: '#9CA3AF',
-            margin: '0.5rem 0 0 0'
-          }}>
-            Hos geldiniz, {user?.name}
-          </p>
-        </div>
-        
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '0.5rem 1rem',
-            background: '#374151',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '0.875rem'
-          }}
-        >
-          Cikis Yap
-        </button>
+    <div className={styles.dashboard}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Dashboard</h1>
+        <p className={styles.welcome}>Hos geldiniz, {user?.name}</p>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '1.5rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          background: '#374151',
-          padding: '1.5rem',
-          borderRadius: '12px'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Urun Yonetimi
-          </h3>
-          <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Urunleri goruntule, duzenle ve yeni urun ekle
-          </p>
-          <Link 
-            href="/admin/products"
-            style={{
-              color: '#60A5FA',
-              textDecoration: 'none',
-              fontSize: '0.875rem'
-            }}
-          >
-            Urunleri Yonet →
+      <div className={styles.statsGrid}>
+        {statsCards.map((card) => (
+          <Link key={card.title} href={card.href} className={styles.statCard}>
+            <div className={styles.statIcon} style={{ color: card.color }}>
+              <card.icon size={24} />
+            </div>
+            <div className={styles.statContent}>
+              <h3 className={styles.statValue}>{card.value}</h3>
+              <p className={styles.statTitle}>{card.title}</p>
+            </div>
           </Link>
-        </div>
+        ))}
+      </div>
 
-        <div style={{
-          background: '#374151',
-          padding: '1.5rem',
-          borderRadius: '12px'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Blog Yonetimi
-          </h3>
-          <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Blog yazilarini yonet, yeni icerik ekle
-          </p>
-          <Link 
-            href="/admin/blog"
-            style={{
-              color: '#60A5FA',
-              textDecoration: 'none',
-              fontSize: '0.875rem'
-            }}
-          >
-            Blog Yonet →
-          </Link>
-        </div>
-
-        <div style={{
-          background: '#374151',
-          padding: '1.5rem',
-          borderRadius: '12px'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Medya Kutuphanesi
-          </h3>
-          <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Gorselleri yukle ve yonet
-          </p>
-          <Link 
-            href="/admin/media"
-            style={{
-              color: '#60A5FA',
-              textDecoration: 'none',
-              fontSize: '0.875rem'
-            }}
-          >
-            Medya Yonet →
-          </Link>
-        </div>
-
-        <div style={{
-          background: '#374151',
-          padding: '1.5rem',
-          borderRadius: '12px'
-        }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-            Site Ayarlari
-          </h3>
-          <p style={{ color: '#9CA3AF', margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
-            Genel site ayarlarini duzenle
-          </p>
-          <Link 
-            href="/admin/settings"
-            style={{
-              color: '#60A5FA',
-              textDecoration: 'none',
-              fontSize: '0.875rem'
-            }}
-          >
-            Ayarlar →
-          </Link>
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Hizli Erisim</h2>
+        <div className={styles.actionsGrid}>
+          {quickActions.map((action) => (
+            <Link key={action.title} href={action.href} className={styles.actionCard}>
+              <div className={styles.actionIcon} style={{ backgroundColor: action.color }}>
+                <action.icon size={20} />
+              </div>
+              <div className={styles.actionContent}>
+                <h3 className={styles.actionTitle}>{action.title}</h3>
+                <p className={styles.actionDescription}>{action.description}</p>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
 
-      <div style={{
-        background: '#374151',
-        padding: '1.5rem',
-        borderRadius: '12px'
-      }}>
-        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem' }}>
-          Kullanici Bilgileri
-        </h3>
-        <div style={{ color: '#9CA3AF', fontSize: '0.875rem' }}>
-          <p><strong>Email:</strong> {user?.email}</p>
-          <p><strong>Isim:</strong> {user?.name}</p>
-          <p><strong>Rol:</strong> {user?.role}</p>
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Hesap Bilgileri</h2>
+        <div className={styles.userCard}>
+          <div className={styles.userInfo}>
+            <div className={styles.userAvatar}>
+              <Users size={24} />
+            </div>
+            <div className={styles.userDetails}>
+              <h3 className={styles.userName}>{user?.name}</h3>
+              <p className={styles.userEmail}>{user?.email}</p>
+              <span className={styles.userRole}>{user?.role}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

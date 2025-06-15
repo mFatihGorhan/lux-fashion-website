@@ -1,0 +1,105 @@
+.sidebar {
+  width: 260px;
+  min-height: calc(100vh - 64px);
+  background: #111827;
+  border-right: 1px solid #374151;
+  padding: 1rem 0;
+  position: sticky;
+  top: 64px;
+}
+
+.nav {
+  height: 100%;
+}
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menuItem {
+  margin-bottom: 0.25rem;
+}
+
+.menuLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #D1D5DB;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.menuLink:hover {
+  background: #1F2937;
+  color: white;
+  border-left-color: #374151;
+}
+
+.menuLink.active {
+  background: #1F2937;
+  color: #60A5FA;
+  border-left-color: #60A5FA;
+}
+
+.submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #0F172A;
+  border-left: 3px solid #374151;
+}
+
+.submenuLink {
+  display: block;
+  padding: 0.5rem 1rem 0.5rem 3rem;
+  color: #9CA3AF;
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.submenuLink:hover {
+  background: #1F2937;
+  color: #D1D5DB;
+}
+
+.submenuLink.active {
+  background: #1F2937;
+  color: #60A5FA;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+  
+  .menuLink {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .submenuLink {
+    padding: 0.4rem 0.75rem 0.4rem 2.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 64px;
+    z-index: 50;
+    transition: left 0.3s;
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+}

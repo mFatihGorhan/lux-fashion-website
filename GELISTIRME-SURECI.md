@@ -118,11 +118,31 @@ Modern lüks moda e-ticaret sitesi - Next.js 15 + TypeScript + Prisma
 
 ---
 
-#### ADIM 4: Admin Paneli
-- [ ] Admin layout tamamlama
-- [ ] Dashboard sayfası
-- [ ] Ürün yönetimi CRUD
-- [ ] Blog yönetimi
+### ✅ Vercel Deployment Hazırlığı
+**Tarih:** 2025-06-15  
+**Durum:** Tamamlandı
+
+**Yapılanlar:**
+- ✅ VERCEL-SETUP.md rehberi oluşturuldu
+- ✅ vercel.json konfigürasyonu optimize edildi
+- ✅ Build scripts Prisma için güncellendi
+- ✅ Environment variables dokümante edildi
+- ✅ GitHub'a push edildi
+
+**Deployment Adımları:**
+1. Vercel'de GitHub repo'yu bağlayın
+2. Environment variables ekleyin (VERCEL-SETUP.md'de)
+3. Deploy edin
+4. Production URL ile NEXTAUTH_URL güncelleyin
+
+---
+
+### 🎯 ADIM 4: Admin Paneli CRUD İşlemleri (Devam Eden)
+- [ ] Admin layout ve sidebar tamamlama
+- [ ] Ürün CRUD API endpoints
+- [ ] Ürün listeleme sayfası
+- [ ] Ürün ekleme/düzenleme formu
+- [ ] Kategori yönetimi
 
 #### ADIM 5: API Endpoints
 - [ ] Products API

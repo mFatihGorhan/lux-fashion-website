@@ -2,6 +2,9 @@
 
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import AdminHeader from '@/components/admin/layout/AdminHeader'
+import AdminSidebar from '@/components/admin/layout/AdminSidebar'
+import styles from './admin-layout.module.css'
 
 // Disable static generation for admin pages
 export const dynamic = 'force-dynamic'
@@ -26,23 +29,22 @@ export default function AdminLayout({
   // Hydration guard - show loading until client-side mounted
   if (!hasMounted) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh',
-        background: '#1A1A1A',
-        color: 'white'
-      }}>
+      <div className={styles.loading}>
         <div>Yukleniyor...</div>
       </div>
     )
   }
 
-  // Client-side mounted, show admin content
+  // Client-side mounted, show admin content with layout
   return (
-    <div style={{ background: '#1A1A1A', minHeight: '100vh' }}>
-      {children}
+    <div className={styles.adminLayout}>
+      <AdminHeader />
+      <div className={styles.adminContent}>
+        <AdminSidebar />
+        <main className={styles.mainContent}>
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
