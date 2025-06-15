@@ -89,7 +89,7 @@ Modern lüks moda e-ticaret sitesi - Next.js 15 + TypeScript + Prisma
 - ✅ Admin dashboard sayfası
 
 **Login Bilgileri:**
-- URL: http://localhost:3001/admin/login
+- URL: http://localhost:3000/admin/login
 - Email: admin@luxfashion.com
 - Password: admin123
 
@@ -102,10 +102,19 @@ Modern lüks moda e-ticaret sitesi - Next.js 15 + TypeScript + Prisma
 
 **Teknikler:**
 - NextAuth.js v4
-- Credentials Provider
+- Credentials Provider  
 - JWT Strategy
 - Prisma Adapter
 - React Hook Form + Zod validation
+- Hydration mismatch fixes
+- Client-side rendering for admin pages
+
+**Çözülen Sorunlar:**
+- ✅ UTF-8 encoding sorunları
+- ✅ TypeScript type hatları
+- ✅ ESLint configuration
+- ✅ Hydration mismatch hatası
+- ✅ Production build sorunları
 
 ---
 
