@@ -1,7 +1,10 @@
 'use client'
 
-import { useRequireAdmin } from '@/lib/auth/hooks'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+// Disable static generation for admin pages
+export const dynamic = 'force-dynamic'
 
 export default function AdminLayout({
   children,
@@ -9,15 +12,19 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const { isAdmin, isLoading } = useRequireAdmin()
+  const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
 
   // Login sayfasi icin auth kontrolu yapma
   if (pathname === '/admin/login') {
     return children
   }
 
-  // Loading state
-  if (isLoading) {
+  // Hydration guard - show loading until client-side mounted
+  if (!hasMounted) {
     return (
       <div style={{ 
         display: 'flex', 
@@ -32,15 +39,10 @@ export default function AdminLayout({
     )
   }
 
-  // Auth check passed
-  if (isAdmin) {
-    return (
-      <div style={{ background: '#1A1A1A', minHeight: '100vh' }}>
-        {children}
-      </div>
-    )
-  }
-
-  // Auth check failed - hook will redirect
-  return null
+  // Client-side mounted, show admin content
+  return (
+    <div style={{ background: '#1A1A1A', minHeight: '100vh' }}>
+      {children}
+    </div>
+  )
 }

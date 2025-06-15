@@ -46,7 +46,8 @@ export default function AdminLogin() {
 
       // Session kontrolu
       const session = await getSession()
-      if (session?.user?.role !== 'ADMIN') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((session?.user as any)?.role !== 'ADMIN') {
         setError('Bu alana erisim yetkiniz yok')
         return
       }

@@ -2,14 +2,21 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+interface UserWithRole {
+  id: string
+  email: string
+  name: string
+  role: string
+}
+
 export function useAuth() {
   const { data: session, status } = useSession()
   
   return {
-    user: session?.user,
+    user: session?.user as UserWithRole | undefined,
     isLoading: status === 'loading',
     isAuthenticated: !!session,
-    isAdmin: session?.user?.role === 'ADMIN',
+    isAdmin: (session?.user as UserWithRole)?.role === 'ADMIN',
   }
 }
 
@@ -36,5 +43,5 @@ export function useRequireAdmin(redirectTo = '/') {
     }
   }, [isAdmin, isLoading, router, redirectTo])
 
-  return { isAdmin, isLoading }
+  return { isAdmin: isAdmin as boolean, isLoading }
 }
