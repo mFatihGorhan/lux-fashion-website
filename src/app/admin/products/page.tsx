@@ -2,21 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Plus, Edit, Trash2, Eye } from 'lucide-react'
 
 interface Product {
   id: string
   name: string
-  price: number
-  compareAtPrice?: number
-  inStock: boolean
+  price: string
+  primaryImage: string
+  hoverImage: string
+  badge?: string
   featured: boolean
   category: {
     name: string
   }
-  images: Array<{
-    url: string
-  }>
   createdAt: string
 }
 
@@ -94,7 +93,7 @@ export default function ProductsPage() {
                 <th className="text-left p-4 font-medium">Urun</th>
                 <th className="text-left p-4 font-medium">Kategori</th>
                 <th className="text-left p-4 font-medium">Fiyat</th>
-                <th className="text-left p-4 font-medium">Stok</th>
+                <th className="text-left p-4 font-medium">Badge</th>
                 <th className="text-left p-4 font-medium">Ozel</th>
                 <th className="text-left p-4 font-medium">Islemler</th>
               </tr>
@@ -104,10 +103,12 @@ export default function ProductsPage() {
                 <tr key={product.id} className="border-b hover:bg-gray-50">
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      {product.images[0] && (
-                        <img
-                          src={product.images[0].url}
+                      {product.primaryImage && (
+                        <Image
+                          src={product.primaryImage}
                           alt={product.name}
+                          width={48}
+                          height={48}
                           className="w-12 h-12 object-cover rounded"
                         />
                       )}
@@ -118,23 +119,14 @@ export default function ProductsPage() {
                   </td>
                   <td className="p-4">{product.category.name}</td>
                   <td className="p-4">
-                    <div className="flex flex-col">
-                      <span className="font-medium">₺{product.price}</span>
-                      {product.compareAtPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          ₺{product.compareAtPrice}
-                        </span>
-                      )}
-                    </div>
+                    <span className="font-medium">{product.price}</span>
                   </td>
                   <td className="p-4">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      product.inStock 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {product.inStock ? 'Stokta' : 'Stok Yok'}
-                    </span>
+                    {product.badge && (
+                      <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
+                        {product.badge}
+                      </span>
+                    )}
                   </td>
                   <td className="p-4">
                     {product.featured && (

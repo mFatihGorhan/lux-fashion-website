@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth/config'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -14,11 +14,11 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
-        category: true,
-        images: true
+        category: true
       }
     })
 
@@ -35,7 +35,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -44,34 +44,25 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const data = await request.json()
 
-    // Delete existing images
-    await prisma.productImage.deleteMany({
-      where: { productId: params.id }
-    })
-
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: data.name,
         slug: data.slug,
         description: data.description,
-        price: parseFloat(data.price),
-        compareAtPrice: data.compareAtPrice ? parseFloat(data.compareAtPrice) : null,
-        inStock: data.inStock,
+        price: data.price,
+        primaryImage: data.primaryImage || '',
+        hoverImage: data.hoverImage || '',
+        badge: data.badge,
+        colors: data.colors || [],
         featured: data.featured || false,
-        categoryId: data.categoryId,
-        images: {
-          create: data.images?.map((img: string) => ({
-            url: img,
-            altText: data.name
-          })) || []
-        }
+        categoryId: data.categoryId
       },
       include: {
-        category: true,
-        images: true
+        category: true
       }
     })
 
@@ -84,7 +75,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -93,8 +84,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     await prisma.product.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'Product deleted successfully' })

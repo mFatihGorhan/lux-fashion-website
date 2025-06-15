@@ -19,11 +19,11 @@ export default function NewProductPage() {
     slug: '',
     description: '',
     price: '',
-    compareAtPrice: '',
+    primaryImage: '',
+    hoverImage: '',
+    badge: '',
     categoryId: '',
-    inStock: true,
-    featured: false,
-    images: ['']
+    featured: false
   })
 
   useEffect(() => {
@@ -66,30 +66,11 @@ export default function NewProductPage() {
     }))
   }
 
-  const handleImageChange = (index: number, value: string) => {
-    const newImages = [...formData.images]
-    newImages[index] = value
-    setFormData(prev => ({ ...prev, images: newImages }))
-  }
-
-  const addImageField = () => {
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, '']
-    }))
-  }
-
-  const removeImageField = (index: number) => {
-    if (formData.images.length > 1) {
-      const newImages = formData.images.filter((_, i) => i !== index)
-      setFormData(prev => ({ ...prev, images: newImages }))
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.price || !formData.categoryId) {
+    if (!formData.name || !formData.price || !formData.categoryId || !formData.primaryImage) {
       alert('Lütfen gerekli alanları doldurun')
       return
     }
@@ -102,10 +83,7 @@ export default function NewProductPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          ...formData,
-          images: formData.images.filter(img => img.trim() !== '')
-        })
+        body: JSON.stringify(formData)
       })
 
       if (response.ok) {
@@ -174,31 +152,18 @@ export default function NewProductPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium mb-2">
-                Fiyat (₺) *
+                Fiyat *
               </label>
               <input
-                type="number"
-                step="0.01"
+                type="text"
                 value={formData.price}
                 onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                placeholder="2,850 TL"
                 className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Eski Fiyat (₺)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={formData.compareAtPrice}
-                onChange={(e) => setFormData(prev => ({ ...prev, compareAtPrice: e.target.value }))}
-                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -222,52 +187,49 @@ export default function NewProductPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Ürün Görselleri
-            </label>
-            <div className="space-y-3">
-              {formData.images.map((image, index) => (
-                <div key={index} className="flex gap-2">
-                  <input
-                    type="url"
-                    value={image}
-                    onChange={(e) => handleImageChange(index, e.target.value)}
-                    placeholder="Görsel URL'i girin"
-                    className="flex-1 p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  {formData.images.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeImageField(index)}
-                      className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
-                    >
-                      Sil
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addImageField}
-                className="text-blue-600 hover:underline text-sm"
-              >
-                + Yeni Görsel Ekle
-              </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Ana Görsel URL *
+              </label>
+              <input
+                type="url"
+                value={formData.primaryImage}
+                onChange={(e) => setFormData(prev => ({ ...prev, primaryImage: e.target.value }))}
+                placeholder="https://example.com/image.jpg"
+                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Hover Görsel URL
+              </label>
+              <input
+                type="url"
+                value={formData.hoverImage}
+                onChange={(e) => setFormData(prev => ({ ...prev, hoverImage: e.target.value }))}
+                placeholder="https://example.com/hover-image.jpg"
+                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </div>
 
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formData.inStock}
-                onChange={(e) => setFormData(prev => ({ ...prev, inStock: e.target.checked }))}
-                className="w-4 h-4 text-blue-600"
-              />
-              <span className="text-sm font-medium">Stokta Var</span>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Badge
             </label>
+            <input
+              type="text"
+              value={formData.badge}
+              onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
+              placeholder="Yeni, Limited Edition, Son Parçalar"
+              className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
 
+          <div className="flex gap-6">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"

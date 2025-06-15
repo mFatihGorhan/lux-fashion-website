@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth/config'
 import { prisma } from '@/lib/prisma'
 
@@ -13,8 +13,7 @@ export async function GET() {
 
     const products = await prisma.product.findMany({
       include: {
-        category: true,
-        images: true
+        category: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -43,21 +42,16 @@ export async function POST(request: NextRequest) {
         name: data.name,
         slug: data.slug,
         description: data.description,
-        price: parseFloat(data.price),
-        compareAtPrice: data.compareAtPrice ? parseFloat(data.compareAtPrice) : null,
-        inStock: data.inStock,
+        price: data.price,
+        primaryImage: data.primaryImage || '',
+        hoverImage: data.hoverImage || '',
+        badge: data.badge,
+        colors: data.colors || [],
         featured: data.featured || false,
-        categoryId: data.categoryId,
-        images: {
-          create: data.images?.map((img: string) => ({
-            url: img,
-            altText: data.name
-          })) || []
-        }
+        categoryId: data.categoryId
       },
       include: {
-        category: true,
-        images: true
+        category: true
       }
     })
 
