@@ -115,6 +115,7 @@
   .filtersContent {
     padding: var(--space-sm) 0;
     gap: var(--space-sm);
+    flex-wrap: nowrap;
   }
 }
 
@@ -140,20 +141,15 @@
   transform: translateY(-2px);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .mobileFilterToggle {
     display: flex;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-xs);
   }
   
   .desktopFilters {
     display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .mobileFilterToggle {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-xs);
   }
 }
 
@@ -217,8 +213,8 @@
 @media (max-width: 768px) {
   .viewControls {
     gap: var(--space-sm);
-    width: 100%;
-    justify-content: space-between;
+    flex: 1;
+    justify-content: flex-end;
   }
 }
 
@@ -241,7 +237,7 @@
 
 @media (max-width: 768px) {
   .sortSelect {
-    min-width: 120px;
+    min-width: 140px;
     font-size: var(--font-xs);
     padding: var(--space-xs) var(--space-lg) var(--space-xs) var(--space-xs);
   }
