@@ -10,9 +10,15 @@ interface Category {
   name: string
 }
 
+interface Collection {
+  id: string
+  name: string
+}
+
 export default function NewProductPage() {
   const router = useRouter()
   const [categories, setCategories] = useState<Category[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -23,11 +29,13 @@ export default function NewProductPage() {
     hoverImage: '',
     badge: '',
     categoryId: '',
+    collectionId: '',
     featured: false
   })
 
   useEffect(() => {
     fetchCategories()
+    fetchCollections()
   }, [])
 
   const fetchCategories = async () => {
@@ -35,10 +43,22 @@ export default function NewProductPage() {
       const response = await fetch('/api/admin/categories')
       if (response.ok) {
         const data = await response.json()
-        setCategories(data)
+        setCategories(Array.isArray(data) ? data : data.categories || [])
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error)
+    }
+  }
+
+  const fetchCollections = async () => {
+    try {
+      const response = await fetch('/api/admin/collections')
+      if (response.ok) {
+        const data = await response.json()
+        setCollections(Array.isArray(data) ? data : data.collections || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch collections:', error)
     }
   }
 
@@ -70,8 +90,8 @@ export default function NewProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.name || !formData.price || !formData.categoryId || !formData.primaryImage) {
-      alert('Lütfen gerekli alanları doldurun')
+    if (!formData.name || !formData.price || !formData.categoryId || !formData.collectionId || !formData.primaryImage) {
+      alert('Lütfen gerekli alanları doldurun (Ad, Fiyat, Kategori, Koleksiyon ve Ana Görsel zorunludur)')
       return
     }
 
@@ -168,6 +188,25 @@ export default function NewProductPage() {
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Koleksiyon *
+              </label>
+              <select
+                value={formData.collectionId}
+                onChange={(e) => setFormData(prev => ({ ...prev, collectionId: e.target.value }))}
+                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                required
+              >
+                <option value="">Koleksiyon seçin</option>
+                {collections.map(collection => (
+                  <option key={collection.id} value={collection.id}>
+                    {collection.name}
                   </option>
                 ))}
               </select>

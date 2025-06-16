@@ -13,7 +13,8 @@ export async function GET() {
 
     const products = await prisma.product.findMany({
       include: {
-        category: true
+        category: true,
+        collection: true
       },
       orderBy: {
         createdAt: 'desc'
@@ -37,6 +38,11 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json()
     
+    // Validation - koleksiyon zorunlu
+    if (!data.collectionId) {
+      return NextResponse.json({ error: 'Koleksiyon seçimi zorunludur' }, { status: 400 })
+    }
+    
     const product = await prisma.product.create({
       data: {
         name: data.name,
@@ -48,10 +54,12 @@ export async function POST(request: NextRequest) {
         badge: data.badge,
         colors: data.colors || [],
         featured: data.featured || false,
-        categoryId: data.categoryId
+        categoryId: data.categoryId,
+        collectionId: data.collectionId
       },
       include: {
-        category: true
+        category: true,
+        collection: true
       }
     })
 

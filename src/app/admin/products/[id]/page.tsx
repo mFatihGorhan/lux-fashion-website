@@ -177,6 +177,13 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validation - koleksiyon seçimi zorunlu
+    if (!formData.collectionId) {
+      alert('Koleksiyon seçimi zorunludur!')
+      return
+    }
+    
     setSaving(true)
 
     try {
@@ -188,7 +195,7 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
         body: JSON.stringify({
           ...formData,
           price: parseFloat(formData.price.toString()),
-          collectionId: formData.collectionId || null
+          collectionId: formData.collectionId
         }),
       })
 
@@ -701,7 +708,7 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
                     marginBottom: '0.5rem',
                     color: '#D1D5DB'
                   }}>
-                    Koleksiyon
+                    Koleksiyon *
                   </label>
                   <select
                     value={formData.collectionId}
@@ -714,8 +721,9 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
                       borderRadius: '0.5rem',
                       color: 'white'
                     }}
+                    required
                   >
-                    <option value="">Koleksiyon Seçin (İsteğe Bağlı)</option>
+                    <option value="">Koleksiyon Seçin</option>
                     {collections.map((collection) => (
                       <option key={collection.id} value={collection.id}>
                         {collection.name}
