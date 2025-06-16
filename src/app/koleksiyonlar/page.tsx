@@ -1,281 +1,263 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ChevronDown, Grid, List } from 'lucide-react'
 import ProductCard from '@/components/ui/ProductCard'
+import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton'
 import PageErrorBoundary from '@/components/PageErrorBoundary'
 import styles from './collections.module.css'
 
-// Örnek ürün verisi
-const allProducts = [
-  {
-    id: 1,
-    name: 'Silk Dreams Elbise',
-    category: 'Elbise',
-    collection: 'Yaz 2024',
-    price: '3,450 TL',
-    images: {
-      primary: '/images/product-1-a.jpg',
-      hover: '/images/product-1-b.jpg'
-    },
-    badge: 'Yeni',
-    colors: ['#1A1A1A', '#D4B5A0', '#FFFFFF']
-  },
-  {
-    id: 2,
-    name: 'Minimal Power Blazer',
-    category: 'Ceket',
-    collection: 'Business Chic',
-    price: '4,200 TL',
-    images: {
-      primary: '/images/product-2-a.jpg',
-      hover: '/images/product-2-b.jpg'
-    },
-    colors: ['#1A1A1A', '#8B7355']
-  },
-  {
-    id: 3,
-    name: 'Cashmere Cloud Kazak',
-    category: 'Üst Giyim',
-    collection: 'Kış 2024',
-    price: '2,850 TL',
-    images: {
-      primary: '/images/product-3-a.jpg',
-      hover: '/images/product-3-b.jpg'
-    },
-    badge: 'Son Parçalar',
-    colors: ['#D4B5A0', '#F5F5F3', '#8B7355']
-  },
-  {
-    id: 4,
-    name: 'Wide Leg Trousers',
-    category: 'Alt Giyim',
-    collection: 'Timeless',
-    price: '2,950 TL',
-    images: {
-      primary: '/images/product-4-a.jpg',
-      hover: '/images/product-4-b.jpg'
-    },
-    colors: ['#1A1A1A', '#666666']
-  },
-  {
-    id: 5,
-    name: 'Elegant Midi Skirt',
-    category: 'Etek',
-    collection: 'Yaz 2024',
-    price: '2,450 TL',
-    images: {
-      primary: '/images/product-5-a.jpg',
-      hover: '/images/product-5-b.jpg'
-    },
-    colors: ['#D4B5A0', '#1A1A1A']
-  },
-  {
-    id: 6,
-    name: 'Luxe Silk Shirt',
-    category: 'Üst Giyim',
-    collection: 'Business Chic',
-    price: '2,150 TL',
-    images: {
-      primary: '/images/product-6-a.jpg',
-      hover: '/images/product-6-b.jpg'
-    },
-    badge: 'Limited Edition',
-    colors: ['#FFFFFF', '#F5F5F3']
-  },
-  {
-    id: 7,
-    name: 'Statement Coat',
-    category: 'Dış Giyim',
-    collection: 'Kış 2024',
-    price: '7,850 TL',
-    images: {
-      primary: '/images/product-7-a.jpg',
-      hover: '/images/product-7-b.jpg'
-    },
-    colors: ['#1A1A1A', '#8B7355', '#D4B5A0']
-  },
-  {
-    id: 8,
-    name: 'Evening Elegance Dress',
-    category: 'Elbise',
-    collection: 'Special Occasions',
-    price: '5,450 TL',
-    images: {
-      primary: '/images/product-8-a.jpg',
-      hover: '/images/product-8-b.jpg'
-    },
-    badge: 'Özel Koleksiyon',
-    colors: ['#1A1A1A', '#8B6B47']
+interface Product {
+  id: string
+  name: string
+  slug: string
+  price: number
+  primaryImage?: string
+  hoverImage?: string
+  category: {
+    id: string
+    name: string
+    slug: string
   }
-]
+  collection?: {
+    id: string
+    name: string
+    slug: string
+  }
+  colors?: string[]
+  badge?: string
+  featured: boolean
+  isActive: boolean
+}
 
-const filterOptions = [
-  { value: 'all', label: 'Tüm Ürünler', type: 'all' },
-  // Kategoriler
-  { value: 'category-elbise', label: 'Kategori: Elbise', type: 'category', filterValue: 'Elbise' },
-  { value: 'category-ust-giyim', label: 'Kategori: Üst Giyim', type: 'category', filterValue: 'Üst Giyim' },
-  { value: 'category-alt-giyim', label: 'Kategori: Alt Giyim', type: 'category', filterValue: 'Alt Giyim' },
-  { value: 'category-dis-giyim', label: 'Kategori: Dış Giyim', type: 'category', filterValue: 'Dış Giyim' },
-  { value: 'category-ceket', label: 'Kategori: Ceket', type: 'category', filterValue: 'Ceket' },
-  { value: 'category-etek', label: 'Kategori: Etek', type: 'category', filterValue: 'Etek' },
-  // Koleksiyonlar
-  { value: 'collection-yaz-2024', label: 'Koleksiyon: Yaz 2024', type: 'collection', filterValue: 'Yaz 2024' },
-  { value: 'collection-kis-2024', label: 'Koleksiyon: Kış 2024', type: 'collection', filterValue: 'Kış 2024' },
-  { value: 'collection-business-chic', label: 'Koleksiyon: Business Chic', type: 'collection', filterValue: 'Business Chic' },
-  { value: 'collection-timeless', label: 'Koleksiyon: Timeless', type: 'collection', filterValue: 'Timeless' },
-  { value: 'collection-special-occasions', label: 'Koleksiyon: Special Occasions', type: 'collection', filterValue: 'Special Occasions' },
-]
-
-const sortOptions = [
-  { value: 'featured', label: 'Öne Çıkanlar' },
-  { value: 'price-asc', label: 'Fiyat: Düşükten Yükseğe' },
-  { value: 'price-desc', label: 'Fiyat: Yüksekten Düşüğe' },
-  { value: 'newest', label: 'En Yeniler' }
-]
+interface Collection {
+  id: string
+  name: string
+  slug: string
+}
 
 function CollectionsContent() {
-  const [selectedFilter, setSelectedFilter] = useState('all')
-  const [sortBy, setSortBy] = useState('featured')
+  const [products, setProducts] = useState<Product[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCollection, setSelectedCollection] = useState('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
-  // Filtreleme
-  const filteredProducts = allProducts.filter(product => {
-    if (selectedFilter === 'all') return true
-    
-    const option = filterOptions.find(opt => opt.value === selectedFilter)
-    if (!option) return true
-    
-    if (option.type === 'category') {
-      return product.category === option.filterValue
-    } else if (option.type === 'collection') {
-      return product.collection === option.filterValue
-    }
-    
-    return true
-  })
+  useEffect(() => {
+    fetchData()
+  }, [selectedCollection]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sıralama
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-asc':
-        return parseInt(a.price.replace(/[^\d]/g, '')) - parseInt(b.price.replace(/[^\d]/g, ''))
-      case 'price-desc':
-        return parseInt(b.price.replace(/[^\d]/g, '')) - parseInt(a.price.replace(/[^\d]/g, ''))
-      case 'newest':
-        return b.id - a.id
-      default:
-        return 0
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      
+      const params = new URLSearchParams()
+      if (selectedCollection !== 'all') {
+        params.append('collection', selectedCollection)
+      }
+
+      const [productsRes, collectionsRes] = await Promise.all([
+        fetch(`/api/products?${params.toString()}`),
+        fetch('/api/collections').catch(() => ({ ok: false }))
+      ])
+
+      if (productsRes.ok) {
+        const productsData = await productsRes.json()
+        setProducts(productsData || [])
+      } else {
+        // Fallback to default products if API fails
+        setProducts(defaultProducts)
+      }
+
+      if (collectionsRes.ok && 'json' in collectionsRes) {
+        const collectionsData = await collectionsRes.json()
+        const allCollection = { id: 'all', name: 'Tüm Koleksiyonlar', slug: 'all' }
+        setCollections([allCollection, ...collectionsData])
+      } else {
+        // Fallback collections
+        setCollections(defaultCollections)
+      }
+    } catch (error) {
+      console.error('Error fetching collections data:', error)
+      setProducts(defaultProducts)
+      setCollections(defaultCollections)
+    } finally {
+      setLoading(false)
     }
-  })
+  }
 
   return (
     <main className={styles.main}>
-      {/* Page Header */}
-      <section className={styles.pageHeader}>
-        <div className={styles.headerContent}>
-          <h1 className={styles.title}>Koleksiyonlar</h1>
-          <p className={styles.subtitle}>
-            Her biri özenle tasarlanmış, sınırlı sayıda üretilen parçalarımız
+      {/* Hero Section */}
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>Koleksiyonlarımız</h1>
+          <p className={styles.heroSubtitle}>
+            Özgün tasarımları ve zarafeti buluşturan özel koleksiyonlarımızı keşfedin
           </p>
         </div>
       </section>
 
-      {/* Controls Bar */}
-      <div className={styles.filtersBar}>
+      {/* Filters and Content */}
+      <section className={styles.content}>
         <div className={styles.container}>
-          <div className={styles.filtersContent}>
-            <div className={styles.resultsInfo}>
-              <p>{sortedProducts.length} ürün gösteriliyor</p>
-            </div>
-
-            <div className={styles.viewControls}>
-              {/* Filter Dropdown */}
-              <div className={styles.sortDropdown}>
+          {/* Filters */}
+          <div className={styles.filters}>
+            <div className={styles.filterGroup}>
+              <label htmlFor="collection-select" className={styles.filterLabel}>
+                Koleksiyon:
+              </label>
+              <div className={styles.selectWrapper}>
                 <select
-                  value={selectedFilter}
-                  onChange={(e) => setSelectedFilter(e.target.value)}
-                  className={styles.sortSelect}
+                  id="collection-select"
+                  value={selectedCollection}
+                  onChange={(e) => setSelectedCollection(e.target.value)}
+                  className={styles.select}
                 >
-                  {filterOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
+                  {collections.map(collection => (
+                    <option key={collection.id} value={collection.slug}>
+                      {collection.name}
                     </option>
                   ))}
                 </select>
-                <ChevronDown size={16} className={styles.dropdownIcon} />
-              </div>
-
-              {/* Sort Dropdown */}
-              <div className={styles.sortDropdown}>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className={styles.sortSelect}
-                >
-                  {sortOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={16} className={styles.dropdownIcon} />
-              </div>
-
-              {/* View Mode */}
-              <div className={styles.viewModeButtons}>
-                <button
-                  className={`${styles.viewModeButton} ${
-                    viewMode === 'grid' ? styles.active : ''
-                  }`}
-                  onClick={() => setViewMode('grid')}
-                  aria-label="Grid görünümü"
-                >
-                  <Grid size={18} />
-                </button>
-                <button
-                  className={`${styles.viewModeButton} ${
-                    viewMode === 'list' ? styles.active : ''
-                  }`}
-                  onClick={() => setViewMode('list')}
-                  aria-label="Liste görünümü"
-                >
-                  <List size={18} />
-                </button>
+                <ChevronDown className={styles.selectIcon} size={20} />
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-
-      {/* Products Grid */}
-      <section className={styles.productsSection}>
-        <div className={styles.container}>
-          <div className={`${styles.productsGrid} ${
-            viewMode === 'list' ? styles.listView : ''
-          }`}>
-            {sortedProducts.map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                index={index}
-                viewMode={viewMode}
-              />
-            ))}
+            <div className={styles.viewToggle}>
+              <button
+                className={`${styles.viewButton} ${viewMode === 'grid' ? styles.active : ''}`}
+                onClick={() => setViewMode('grid')}
+                aria-label="Grid view"
+              >
+                <Grid size={20} />
+              </button>
+              <button
+                className={`${styles.viewButton} ${viewMode === 'list' ? styles.active : ''}`}
+                onClick={() => setViewMode('list')}
+                aria-label="List view"
+              >
+                <List size={20} />
+              </button>
+            </div>
           </div>
 
-          {sortedProducts.length === 0 && (
-            <div className={styles.noResults}>
-              <p>Henüz ürün bulunmamaktadır.</p>
+          {/* Results Info */}
+          <div className={styles.resultsInfo}>
+            <p className={styles.resultsCount}>
+              {loading ? 'Yükleniyor...' : `${products.length} ürün bulundu`}
+            </p>
+          </div>
+
+          {/* Products Grid */}
+          {loading ? (
+            <ProductCardSkeleton viewMode={viewMode} count={8} />
+          ) : products.length === 0 ? (
+            <div className={styles.emptyState}>
+              <h3>Henüz ürün bulunmuyor</h3>
+              <p>Bu koleksiyonda henüz ürün bulunmamaktadır.</p>
+            </div>
+          ) : (
+            <div className={`${styles.productsGrid} ${viewMode === 'list' ? styles.listView : ''}`}>
+              {products.map(product => (
+                <ProductCard
+                  key={product.id}
+                  product={{
+                    id: parseInt(product.id) || 0,
+                    name: product.name,
+                    category: product.category.name,
+                    price: `${product.price.toLocaleString('tr-TR')} TL`,
+                    images: {
+                      primary: product.primaryImage || '/images/placeholder-product.svg',
+                      hover: product.hoverImage || product.primaryImage || '/images/placeholder-product.svg'
+                    },
+                    colors: product.colors || [],
+                    badge: product.badge
+                  }}
+                  viewMode={viewMode}
+                />
+              ))}
             </div>
           )}
         </div>
       </section>
-
     </main>
   )
 }
+
+// Fallback data for when API is not available
+const defaultProducts: Product[] = [
+  {
+    id: '1',
+    name: 'Silk Dreams Elbise',
+    slug: 'silk-dreams-elbise',
+    price: 3450,
+    primaryImage: '/images/placeholder-product.svg',
+    category: {
+      id: '1',
+      name: 'Elbise',
+      slug: 'elbise'
+    },
+    collection: {
+      id: '1',
+      name: 'Yaz 2024',
+      slug: 'yaz-2024'
+    },
+    badge: 'Yeni',
+    colors: ['#1A1A1A', '#D4B5A0', '#FFFFFF'],
+    featured: false,
+    isActive: true
+  },
+  {
+    id: '2',
+    name: 'Minimal Power Blazer',
+    slug: 'minimal-power-blazer',
+    price: 4200,
+    primaryImage: '/images/placeholder-product.svg',
+    category: {
+      id: '2',
+      name: 'Ceket',
+      slug: 'ceket'
+    },
+    collection: {
+      id: '2',
+      name: 'Business Chic',
+      slug: 'business-chic'
+    },
+    colors: ['#1A1A1A', '#8B7355'],
+    featured: false,
+    isActive: true
+  },
+  {
+    id: '3',
+    name: 'Cashmere Cloud Kazak',
+    slug: 'cashmere-cloud-kazak',
+    price: 2850,
+    primaryImage: '/images/placeholder-product.svg',
+    category: {
+      id: '3',
+      name: 'Üst Giyim',
+      slug: 'ust-giyim'
+    },
+    collection: {
+      id: '3',
+      name: 'Kış 2024',
+      slug: 'kis-2024'
+    },
+    badge: 'Son Parçalar',
+    colors: ['#D4B5A0', '#F5F5F3', '#8B7355'],
+    featured: false,
+    isActive: true
+  }
+]
+
+const defaultCollections: Collection[] = [
+  { id: 'all', name: 'Tüm Koleksiyonlar', slug: 'all' },
+  { id: '1', name: 'Yaz 2024', slug: 'yaz-2024' },
+  { id: '2', name: 'Kış 2024', slug: 'kis-2024' },
+  { id: '3', name: 'Business Chic', slug: 'business-chic' },
+  { id: '4', name: 'Timeless', slug: 'timeless' }
+]
 
 export default function CollectionsPage() {
   return (

@@ -201,7 +201,7 @@ const FeaturedProducts = () => {
               )}
 
               {/* Image Container */}
-              <div className={styles.imageContainer}>
+              <Link href={`/urun/${product.id}`} className={styles.imageContainer}>
                 <div 
                   className={`${styles.primaryImage} ${
                     hoveredProduct === product.id ? styles.hidden : ''
@@ -241,18 +241,24 @@ const FeaturedProducts = () => {
                 }`}>
                   <button 
                     className={styles.actionButton}
-                    onClick={() => handleQuickView(product.id)}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleQuickView(product.id)
+                    }}
                     aria-label="Hızlı Görünüm"
                   >
                     <Eye size={18} />
                   </button>
                 </div>
-              </div>
+              </Link>
 
               {/* Product Info */}
               <div className={styles.productInfo}>
                 <span className={styles.category}>{product.category}</span>
-                <h3 className={styles.productName}>{product.name}</h3>
+                <h3 className={styles.productName}>
+                  <Link href={`/urun/${product.id}`}>{product.name}</Link>
+                </h3>
                 
                 {/* Color Options */}
                 <div className={styles.colors}>
