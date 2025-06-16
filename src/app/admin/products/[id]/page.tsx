@@ -52,6 +52,7 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [productId, setProductId] = useState<string>('')
+  const [isInitialized, setIsInitialized] = useState(false)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -74,13 +75,27 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
   })
 
   useEffect(() => {
-    params.then(({ id }) => {
-      setProductId(id)
-      fetchProduct(id)
-      fetchCategories()
-      fetchCollections()
-    })
-  }, [])
+    const initializeComponent = async () => {
+      try {
+        const resolvedParams = await params
+        const { id } = resolvedParams
+        setProductId(id)
+        setIsInitialized(true)
+        
+        // Fetch data
+        await Promise.all([
+          fetchProduct(id),
+          fetchCategories(),
+          fetchCollections()
+        ])
+      } catch (error) {
+        console.error('Error initializing component:', error)
+        setLoading(false)
+      }
+    }
+
+    initializeComponent()
+  }, [params])
 
   const fetchProduct = async (id: string) => {
     try {
@@ -89,24 +104,26 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
         const productData = await response.json()
         setProduct(productData)
         setFormData({
-          name: productData.name,
-          slug: productData.slug,
+          name: productData.name || '',
+          slug: productData.slug || '',
           description: productData.description || '',
-          price: productData.price,
-          primaryImage: productData.primaryImage,
+          price: productData.price || 0,
+          primaryImage: productData.primaryImage || '',
           primaryImageAlt: productData.primaryImageAlt || '',
-          hoverImage: productData.hoverImage,
+          hoverImage: productData.hoverImage || '',
           hoverImageAlt: productData.hoverImageAlt || '',
           badge: productData.badge || '',
           colors: productData.colors || [],
-          order: productData.order,
-          featured: productData.featured,
-          isActive: productData.isActive,
-          categoryId: productData.categoryId,
+          order: productData.order || 0,
+          featured: productData.featured || false,
+          isActive: productData.isActive !== undefined ? productData.isActive : true,
+          categoryId: productData.categoryId || '',
           collectionId: productData.collectionId || '',
           metaTitle: productData.metaTitle || '',
           metaDescription: productData.metaDescription || ''
         })
+      } else {
+        console.error('Failed to fetch product:', response.status, response.statusText)
       }
     } catch (error) {
       console.error('Failed to fetch product:', error)
@@ -120,7 +137,9 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
       const response = await fetch('/api/admin/categories')
       if (response.ok) {
         const data = await response.json()
-        setCategories(data)
+        setCategories(Array.isArray(data) ? data : data.categories || [])
+      } else {
+        console.error('Failed to fetch categories:', response.status, response.statusText)
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error)
@@ -132,7 +151,9 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
       const response = await fetch('/api/admin/collections')
       if (response.ok) {
         const data = await response.json()
-        setCollections(data)
+        setCollections(Array.isArray(data) ? data : data.collections || [])
+      } else {
+        console.error('Failed to fetch collections:', response.status, response.statusText)
       }
     } catch (error) {
       console.error('Failed to fetch collections:', error)
@@ -237,7 +258,7 @@ export default function ProductEditPage({ params }: { params: Promise<{ id: stri
     }))
   }
 
-  if (loading) {
+  if (loading || !isInitialized) {
     return (
       <div style={{ 
         display: 'flex', 

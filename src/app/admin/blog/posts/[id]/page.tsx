@@ -48,6 +48,7 @@ export default function BlogPostEditPage({ params }: { params: Promise<{ id: str
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [postId, setPostId] = useState<string>('')
+  const [isInitialized, setIsInitialized] = useState(false)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -67,12 +68,25 @@ export default function BlogPostEditPage({ params }: { params: Promise<{ id: str
   })
 
   useEffect(() => {
-    params.then(({ id }) => {
-      setPostId(id)
-      fetchPost(id)
-      fetchCategories()
-    })
-  }, [])
+    const initializeComponent = async () => {
+      try {
+        const resolvedParams = await params
+        const { id } = resolvedParams
+        setPostId(id)
+        setIsInitialized(true)
+        
+        await Promise.all([
+          fetchPost(id),
+          fetchCategories()
+        ])
+      } catch (error) {
+        console.error('Error initializing component:', error)
+        setLoading(false)
+      }
+    }
+
+    initializeComponent()
+  }, [params])
 
   const fetchPost = async (id: string) => {
     try {
@@ -197,7 +211,7 @@ export default function BlogPostEditPage({ params }: { params: Promise<{ id: str
     }
   }
 
-  if (loading) {
+  if (loading || !isInitialized) {
     return (
       <div style={{ 
         display: 'flex', 
