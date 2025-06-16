@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Filter, X, ChevronDown, Grid, List } from 'lucide-react'
+import { ChevronDown, Grid, List } from 'lucide-react'
 import ProductCard from '@/components/ui/ProductCard'
 import styles from './collections.module.css'
 
@@ -109,7 +109,6 @@ const allProducts = [
   }
 ]
 
-const collections = ['Tümü', 'Yaz 2024', 'Kış 2024', 'Business Chic', 'Timeless', 'Special Occasions']
 const sortOptions = [
   { value: 'featured', label: 'Öne Çıkanlar' },
   { value: 'price-asc', label: 'Fiyat: Düşükten Yükseğe' },
@@ -118,16 +117,11 @@ const sortOptions = [
 ]
 
 export default function CollectionsPage() {
-  const [selectedCollection, setSelectedCollection] = useState('Tümü')
   const [sortBy, setSortBy] = useState('featured')
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
-  // Filtreleme
-  const filteredProducts = allProducts.filter(product => {
-    const collectionMatch = selectedCollection === 'Tümü' || product.collection === selectedCollection
-    return collectionMatch
-  })
+  // Tüm ürünleri göster
+  const filteredProducts = allProducts
 
   // Sıralama
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -155,36 +149,12 @@ export default function CollectionsPage() {
         </div>
       </section>
 
-      {/* Filters Bar */}
+      {/* Controls Bar */}
       <div className={styles.filtersBar}>
         <div className={styles.container}>
           <div className={styles.filtersContent}>
-            <button
-              className={styles.mobileFilterToggle}
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-            >
-              <Filter size={20} />
-              <span>Filtreler</span>
-            </button>
-
-            <div className={styles.desktopFilters}>
-              {/* Collection Filter */}
-              <div className={styles.filterGroup}>
-                <label className={styles.filterLabel}>Koleksiyon</label>
-                <div className={styles.filterButtons}>
-                  {collections.map(collection => (
-                    <button
-                      key={collection}
-                      className={`${styles.filterButton} ${
-                        selectedCollection === collection ? styles.active : ''
-                      }`}
-                      onClick={() => setSelectedCollection(collection)}
-                    >
-                      {collection}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            <div className={styles.resultsInfo}>
+              <p>{sortedProducts.length} ürün gösteriliyor</p>
             </div>
 
             <div className={styles.viewControls}>
@@ -230,47 +200,10 @@ export default function CollectionsPage() {
         </div>
       </div>
 
-      {/* Mobile Filter Panel */}
-      <div className={`${styles.mobileFilterPanel} ${isFilterOpen ? styles.open : ''}`}>
-        <div className={styles.mobileFilterHeader}>
-          <h3>Filtreler</h3>
-          <button
-            className={styles.closeButton}
-            onClick={() => setIsFilterOpen(false)}
-          >
-            <X size={24} />
-          </button>
-        </div>
-        
-        <div className={styles.mobileFilterContent}>
-          {/* Collection Filter */}
-          <div className={styles.mobileFilterGroup}>
-            <h4>Koleksiyon</h4>
-            {collections.map(collection => (
-              <button
-                key={collection}
-                className={`${styles.mobileFilterOption} ${
-                  selectedCollection === collection ? styles.active : ''
-                }`}
-                onClick={() => {
-                  setSelectedCollection(collection)
-                  setIsFilterOpen(false)
-                }}
-              >
-                {collection}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Products Grid */}
       <section className={styles.productsSection}>
         <div className={styles.container}>
-          <div className={styles.resultsInfo}>
-            <p>{sortedProducts.length} ürün gösteriliyor</p>
-          </div>
-
           <div className={`${styles.productsGrid} ${
             viewMode === 'list' ? styles.listView : ''
           }`}>
@@ -286,27 +219,12 @@ export default function CollectionsPage() {
 
           {sortedProducts.length === 0 && (
             <div className={styles.noResults}>
-              <p>Seçilen filtrelere uygun ürün bulunamadı.</p>
-              <button
-                className={styles.resetButton}
-                onClick={() => {
-                  setSelectedCollection('Tümü')
-                }}
-              >
-                Filtreleri Temizle
-              </button>
+              <p>Henüz ürün bulunmamaktadır.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Overlay for mobile filter */}
-      {isFilterOpen && (
-        <div
-          className={styles.overlay}
-          onClick={() => setIsFilterOpen(false)}
-        />
-      )}
     </main>
   )
 }
