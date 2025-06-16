@@ -2,10 +2,14 @@
 
 import { useAuth } from '@/lib/auth/hooks'
 import { signOut } from 'next-auth/react'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Menu } from 'lucide-react'
 import styles from './AdminHeader.module.css'
 
-export default function AdminHeader() {
+interface AdminHeaderProps {
+  onMenuToggle?: () => void
+}
+
+export default function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
   const { user } = useAuth()
 
   const handleLogout = () => {
@@ -16,6 +20,13 @@ export default function AdminHeader() {
     <header className={styles.header}>
       <div className={styles.container}>
         <div className={styles.left}>
+          <button 
+            className={styles.mobileMenuButton}
+            onClick={onMenuToggle}
+            aria-label="Menüyü aç"
+          >
+            <Menu size={20} />
+          </button>
           <h1 className={styles.title}>Lux Fashion Admin</h1>
         </div>
         

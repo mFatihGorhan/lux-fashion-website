@@ -20,6 +20,32 @@
 .left {
   display: flex;
   align-items: center;
+  gap: 0.75rem;
+}
+
+.mobileMenuButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: #374151;
+  border: none;
+  border-radius: 6px;
+  color: #D1D5DB;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mobileMenuButton:hover {
+  background: #4B5563;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .mobileMenuButton {
+    display: flex;
+  }
 }
 
 .title {

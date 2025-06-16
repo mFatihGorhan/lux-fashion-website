@@ -72,7 +72,12 @@ const menuItems = [
   },
 ]
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname()
 
   const isActive = (href: string) => {
@@ -83,37 +88,59 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className={styles.sidebar}>
-      <nav className={styles.nav}>
-        <ul className={styles.menu}>
-          {menuItems.map((item) => (
-            <li key={item.href} className={styles.menuItem}>
-              <Link 
-                href={item.href}
-                className={`${styles.menuLink} ${isActive(item.href) ? styles.active : ''}`}
-              >
-                <item.icon size={18} />
-                <span>{item.label}</span>
-              </Link>
-              
-              {item.submenu && isActive(item.href) && (
-                <ul className={styles.submenu}>
-                  {item.submenu.map((subItem) => (
-                    <li key={subItem.href}>
-                      <Link 
-                        href={subItem.href}
-                        className={`${styles.submenuLink} ${pathname === subItem.href ? styles.active : ''}`}
-                      >
-                        <span>{subItem.label}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
+    <>
+      <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
+        <nav className={styles.nav}>
+          <ul className={styles.menu}>
+            {menuItems.map((item) => (
+              <li key={item.href} className={styles.menuItem}>
+                <Link 
+                  href={item.href}
+                  className={`${styles.menuLink} ${isActive(item.href) ? styles.active : ''}`}
+                  onClick={() => {
+                    // Mobile'da link tıklandığında sidebar'ı kapat
+                    if (window.innerWidth <= 768 && onClose) {
+                      onClose()
+                    }
+                  }}
+                >
+                  <item.icon size={18} />
+                  <span>{item.label}</span>
+                </Link>
+                
+                {item.submenu && isActive(item.href) && (
+                  <ul className={styles.submenu}>
+                    {item.submenu.map((subItem) => (
+                      <li key={subItem.href}>
+                        <Link 
+                          href={subItem.href}
+                          className={`${styles.submenuLink} ${pathname === subItem.href ? styles.active : ''}`}
+                          onClick={() => {
+                            // Mobile'da link tıklandığında sidebar'ı kapat
+                            if (window.innerWidth <= 768 && onClose) {
+                              onClose()
+                            }
+                          }}
+                        >
+                          <span>{subItem.label}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+      
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className={styles.overlay}
+          onClick={onClose}
+        />
+      )}
+    </>
   )
 }

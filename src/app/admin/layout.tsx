@@ -16,10 +16,19 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname()
   const [hasMounted, setHasMounted] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     setHasMounted(true)
   }, [])
+
+  const handleMenuToggle = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  const handleSidebarClose = () => {
+    setIsSidebarOpen(false)
+  }
 
   // Login sayfasi icin auth kontrolu yapma
   if (pathname === '/admin/login') {
@@ -38,9 +47,12 @@ export default function AdminLayout({
   // Client-side mounted, show admin content with layout
   return (
     <div className={styles.adminLayout}>
-      <AdminHeader />
+      <AdminHeader onMenuToggle={handleMenuToggle} />
       <div className={styles.adminContent}>
-        <AdminSidebar />
+        <AdminSidebar 
+          isOpen={isSidebarOpen} 
+          onClose={handleSidebarClose} 
+        />
         <main className={styles.mainContent}>
           {children}
         </main>
