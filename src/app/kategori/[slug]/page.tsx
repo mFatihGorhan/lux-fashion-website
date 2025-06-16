@@ -115,7 +115,7 @@ const CategoryPage = () => {
   }, [products, searchTerm, sortBy, priceRange, showOnlyInStock, showOnlyFeatured])
 
   const handleQuickView = (productId: string) => {
-    console.log('Quick view for product:', productId)
+    // TODO: Implement quick view modal
   }
 
   const formatPrice = (price: number) => {

@@ -1,11 +1,18 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
+import { Suspense } from 'react'
 import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SessionProvider from '@/components/providers/SessionProvider'
+import { WishlistProvider } from '@/contexts/WishlistContext'
 import WhatsAppButtonWrapper from '@/components/WhatsAppButtonWrapper'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { PageLoading } from '@/components/ui/LoadingSpinner'
 import { generatePageMetadata, generateStructuredData } from '@/lib/seo'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import PerformanceMonitor from '@/components/PerformanceMonitor'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -49,12 +56,21 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${playfair.variable}`}>
-        <SessionProvider>
-          <Header />
-          {children}
-          <Footer />
-          <WhatsAppButtonWrapper />
-        </SessionProvider>
+        <ErrorBoundary>
+          <SessionProvider>
+            <WishlistProvider>
+              <Header />
+              <Suspense fallback={<PageLoading />}>
+                {children}
+              </Suspense>
+              <Footer />
+              <WhatsAppButtonWrapper />
+            </WishlistProvider>
+          </SessionProvider>
+          <PerformanceMonitor />
+          <Analytics />
+          <SpeedInsights />
+        </ErrorBoundary>
       </body>
     </html>
   )

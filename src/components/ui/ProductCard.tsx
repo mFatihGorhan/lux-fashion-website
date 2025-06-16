@@ -2,7 +2,16 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Heart, Eye } from 'lucide-react'
+import { 
+  generateBlurDataURL, 
+  getImageSizes, 
+  getLoadingStrategy, 
+  shouldPrioritizeImage, 
+  IMAGE_DIMENSIONS,
+  PLACEHOLDER_IMAGE 
+} from '@/lib/imageUtils'
 import styles from './ProductCard.module.css'
 
 interface Product {
@@ -113,22 +122,41 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Image Container */}
         <Link href={`/urun/${product.id}`} className={styles.imageContainer}>
-          <div 
-            className={`${styles.primaryImage} ${isHovered ? styles.hidden : ''}`}
-            style={{
-              background: `linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%)`
-            }}
-          >
-            <span className={styles.imagePlaceholder}>{product.name}</span>
+          <div className={`${styles.primaryImage} ${isHovered ? styles.hidden : ''}`}>
+            <Image
+              src={product.images.primary || PLACEHOLDER_IMAGE}
+              alt={product.name}
+              width={IMAGE_DIMENSIONS.productCard.width}
+              height={IMAGE_DIMENSIONS.productCard.height}
+              loading={getLoadingStrategy(index)}
+              priority={shouldPrioritizeImage(index)}
+              placeholder="blur"
+              blurDataURL={generateBlurDataURL()}
+              sizes={getImageSizes(viewMode)}
+              className={styles.productImage}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = PLACEHOLDER_IMAGE
+              }}
+            />
           </div>
           
-          <div 
-            className={`${styles.hoverImage} ${isHovered ? styles.visible : ''}`}
-            style={{
-              background: `linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%)`
-            }}
-          >
-            <span className={styles.imagePlaceholder}>Hover: {product.name}</span>
+          <div className={`${styles.hoverImage} ${isHovered ? styles.visible : ''}`}>
+            <Image
+              src={product.images.hover || product.images.primary || PLACEHOLDER_IMAGE}
+              alt={`${product.name} - hover view`}
+              width={IMAGE_DIMENSIONS.productCard.width}
+              height={IMAGE_DIMENSIONS.productCard.height}
+              loading="lazy"
+              placeholder="blur"
+              blurDataURL={generateBlurDataURL()}
+              sizes={getImageSizes(viewMode)}
+              className={styles.productImage}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = PLACEHOLDER_IMAGE
+              }}
+            />
           </div>
 
           {/* Quick Actions */}
@@ -137,7 +165,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               className={styles.actionButton}
               onClick={(e) => {
                 e.preventDefault()
-                console.log('Quick view:', product.id)
+                // TODO: Implement quick view modal
               }}
               aria-label="Hızlı Görünüm"
             >

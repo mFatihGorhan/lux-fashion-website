@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Menu, X, Search, Phone } from 'lucide-react'
+import SearchBox from '@/components/ui/SearchBox'
 import styles from './Header.module.css'
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,9 +68,17 @@ const Header = () => {
             ))}
           </nav>
 
+          {/* Search Box (Desktop) */}
+          <div className={styles.searchContainer}>
+            <SearchBox placeholder="Ürün ara..." className={styles.headerSearch} />
+          </div>
+
           {/* Actions */}
           <div className={styles.actions}>
-            <button className={styles.searchButton}>
+            <button 
+              className={styles.searchButton}
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
               <Search size={20} />
             </button>
             
@@ -87,6 +97,25 @@ const Header = () => {
           </div>
         </div>
       </header>
+
+      {/* Mobile Search */}
+      {isSearchOpen && (
+        <div className={styles.mobileSearchOverlay}>
+          <div className={styles.mobileSearchContainer}>
+            <SearchBox 
+              placeholder="Ürün ara..." 
+              className={styles.mobileSearch}
+              onSearch={() => setIsSearchOpen(false)}
+            />
+            <button 
+              className={styles.mobileSearchClose}
+              onClick={() => setIsSearchOpen(false)}
+            >
+              <X size={24} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Menu */}
       <div className={`${styles.mobileMenu} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>

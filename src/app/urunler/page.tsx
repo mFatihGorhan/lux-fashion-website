@@ -1,8 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Search, Filter, Grid, List, Heart, Eye } from 'lucide-react'
+import SearchBox from '@/components/ui/SearchBox'
+import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton'
+import PageErrorBoundary from '@/components/PageErrorBoundary'
 import styles from './ProductsPage.module.css'
 
 interface ProductImage {
@@ -33,7 +37,8 @@ interface Product {
   colors?: string[]
 }
 
-const ProductsPage = () => {
+function ProductsContent() {
+  const searchParams = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -43,32 +48,63 @@ const ProductsPage = () => {
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'name'>('newest')
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
 
+  const search = searchParams.get('search')
+  const category = searchParams.get('category')
+  const collection = searchParams.get('collection')
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          fetch('/api/products'),
-          fetch('/api/categories')
-        ])
-
-        if (productsRes.ok) {
-          const productsData = await productsRes.json()
-          setProducts(productsData)
-        }
-
-        if (categoriesRes.ok) {
-          const categoriesData = await categoriesRes.json()
-          setCategories(categoriesData)
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-      }
+    if (search) {
+      setSearchTerm(search)
     }
+    if (category) {
+      setSelectedCategory(category)
+    }
+  }, [search, category, collection])
 
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams()
+      
+      if (search) params.append('search', search)
+      if (category) params.append('category', category)
+      if (collection) params.append('collection', collection)
+
+      const [productsRes, categoriesRes] = await Promise.all([
+        fetch(`/api/products?${params.toString()}`),
+        fetch('/api/categories')
+      ])
+
+      if (productsRes.ok) {
+        const productsData = await productsRes.json()
+        setProducts(productsData)
+      }
+
+      if (categoriesRes.ok) {
+        const categoriesData = await categoriesRes.json()
+        setCategories(categoriesData)
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
     fetchData()
-  }, [])
+  }, [search, category, collection])
+
+  const handleSearch = (query: string) => {
+    const url = new URL(window.location.href)
+    if (query) {
+      url.searchParams.set('search', query)
+    } else {
+      url.searchParams.delete('search')
+    }
+    window.history.pushState({}, '', url.toString())
+    setSearchTerm(query)
+  }
 
   const filteredProducts = products
     .filter(product => {
@@ -91,7 +127,7 @@ const ProductsPage = () => {
     })
 
   const handleQuickView = (productId: string) => {
-    console.log('Quick view for product:', productId)
+    // TODO: Implement quick view modal
   }
 
   const formatPrice = (price: number) => {
@@ -118,12 +154,9 @@ const ProductsPage = () => {
           <div className={styles.filterRow}>
             {/* Search */}
             <div className={styles.searchBox}>
-              <Search size={20} className={styles.searchIcon} />
-              <input
-                type="text"
-                placeholder="Ürün ara..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+              <SearchBox 
+                placeholder="Ürün ara..." 
+                onSearch={handleSearch}
                 className={styles.searchInput}
               />
             </div>
@@ -188,10 +221,7 @@ const ProductsPage = () => {
 
         {/* Products Grid/List */}
         {loading ? (
-          <div className={styles.loading}>
-            <div className={styles.loadingSpinner}></div>
-            <p>Ürünler yükleniyor...</p>
-          </div>
+          <ProductCardSkeleton viewMode={viewMode} count={8} />
         ) : filteredProducts.length === 0 ? (
           <div className={styles.empty}>
             <div className={styles.emptyIcon}>🔍</div>
@@ -367,4 +397,26 @@ const ProductsPage = () => {
   )
 }
 
-export default ProductsPage
+export default function ProductsPage() {
+  return (
+    <PageErrorBoundary pageName="Ürünler sayfası" showContactInfo={true}>
+      <Suspense fallback={
+        <div className={styles.page}>
+          <div className={styles.header}>
+            <div className={styles.container}>
+              <div className={styles.headerContent}>
+                <div style={{ height: '3rem', width: '200px', background: '#f0f0f0', borderRadius: '4px', margin: '0 0 1rem 0' }}></div>
+                <div style={{ height: '1.5rem', width: '400px', background: '#f0f0f0', borderRadius: '4px' }}></div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.container}>
+            <ProductCardSkeleton viewMode="grid" count={8} />
+          </div>
+        </div>
+      }>
+        <ProductsContent />
+      </Suspense>
+    </PageErrorBoundary>
+  )
+}

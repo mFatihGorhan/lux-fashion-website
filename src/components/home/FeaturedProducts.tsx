@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Heart, Eye, ArrowRight } from 'lucide-react'
+import ProductCardSkeleton from '../ui/ProductCardSkeleton'
+import { ProductCardWishlistButton } from '../ui/WishlistButton'
 import styles from './FeaturedProducts.module.css'
 
 interface Category {
@@ -147,8 +149,7 @@ const FeaturedProducts = () => {
   }, [])
 
   const handleQuickView = (productId: string) => {
-    console.log('Quick view for product:', productId)
-    // Quick view modal işlevselliği eklenebilir
+    // TODO: Implement quick view modal functionality
   }
 
   const handleGetOffer = (product?: {id: string, name: string}) => {
@@ -185,23 +186,7 @@ const FeaturedProducts = () => {
         {/* Products Grid */}
         <div className={styles.grid}>
           {loading ? (
-            // Loading skeletons
-            Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className={styles.productCard}>
-                <div className={styles.imageContainer}>
-                  <div className={styles.primaryImage} style={{ background: '#f0f0f0' }}>
-                    <span className={styles.imagePlaceholder}>Yükleniyor...</span>
-                  </div>
-                </div>
-                <div className={styles.productInfo}>
-                  <span className={styles.category}>...</span>
-                  <h3 className={styles.productName}>Yükleniyor...</h3>
-                  <div className={styles.priceRow}>
-                    <span className={styles.price}>...</span>
-                  </div>
-                </div>
-              </div>
-            ))
+            <ProductCardSkeleton viewMode="grid" count={4} />
           ) : (
             products.map((product) => (
             <article
@@ -239,6 +224,17 @@ const FeaturedProducts = () => {
                   <span className={styles.imagePlaceholder}>Hover: {product.name}</span>
                 </div>
 
+                {/* Wishlist Button */}
+                <ProductCardWishlistButton 
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    slug: product.id, // Using ID as slug for demo
+                    price: parseInt(product.price.replace(/[^\d]/g, '')),
+                    category: product.category
+                  }}
+                />
+
                 {/* Quick Actions */}
                 <div className={`${styles.quickActions} ${
                   hoveredProduct === product.id ? styles.actionsVisible : ''
@@ -249,12 +245,6 @@ const FeaturedProducts = () => {
                     aria-label="Hızlı Görünüm"
                   >
                     <Eye size={18} />
-                  </button>
-                  <button 
-                    className={styles.actionButton}
-                    aria-label="Favorilere Ekle"
-                  >
-                    <Heart size={18} />
                   </button>
                 </div>
               </div>

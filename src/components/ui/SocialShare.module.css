@@ -1,0 +1,417 @@
+.socialShare {
+  width: 100%;
+}
+
+/* Default Variant */
+.default {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  color: #1a1a1a;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.socialButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8f8f8;
+  color: #666;
+}
+
+.socialButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
+}
+
+.socialButton:active {
+  transform: translateY(0);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 1.25rem 0;
+  text-align: center;
+  color: #999;
+  font-size: 0.875rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.divider span {
+  padding: 0 1rem;
+  background: white;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #f8f8f8;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  color: #666;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.copyButton:hover {
+  background: #f0f0f0;
+  border-color: #999;
+  color: #333;
+}
+
+.nativeShareButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.nativeShareButton:hover {
+  background: #333;
+}
+
+/* Minimal Variant */
+.minimal {
+  display: inline-block;
+  background: transparent;
+}
+
+.minimal .shareButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.minimal .shareButton:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+  color: #333;
+}
+
+/* Floating Variant */
+.floatingShare {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+}
+
+.floatingButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.floatingButton:hover {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.floatingMenu {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.menuContent {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  min-width: 300px;
+  max-width: 90vw;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: modalSlideUp 0.3s ease-out;
+}
+
+.menuTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+  color: #1a1a1a;
+}
+
+.menuContent .socialGrid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.menuContent .socialButton {
+  flex-direction: column;
+  padding: 1rem;
+  min-height: 80px;
+}
+
+.menuContent .copyButton {
+  margin-bottom: 0;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .socialGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .socialButton {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .socialButton span {
+    display: none;
+  }
+  
+  .floatingShare {
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+  .floatingButton {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .menuContent {
+    padding: 1.5rem;
+    min-width: 280px;
+  }
+  
+  .menuContent .socialGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .default {
+    padding: 1rem;
+  }
+  
+  .socialGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  
+  .socialButton {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .socialButton span {
+    display: none;
+  }
+  
+  .menuContent {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  
+  .menuContent .socialButton span {
+    font-size: 0.75rem;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .default {
+    background: #1a1a1a;
+    border-color: #333;
+  }
+  
+  .header {
+    color: white;
+  }
+  
+  .socialButton {
+    background: #2a2a2a;
+    color: #ccc;
+  }
+  
+  .copyButton {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #ccc;
+  }
+  
+  .copyButton:hover {
+    background: #333;
+    border-color: #666;
+    color: white;
+  }
+  
+  .divider span {
+    background: #1a1a1a;
+  }
+  
+  .divider::before,
+  .divider::after {
+    background: #333;
+  }
+  
+  .minimal .shareButton {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #ccc;
+  }
+  
+  .minimal .shareButton:hover {
+    background: #333;
+    border-color: #666;
+    color: white;
+  }
+  
+  .menuContent {
+    background: #1a1a1a;
+  }
+  
+  .menuTitle {
+    color: white;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .socialButton,
+  .copyButton,
+  .nativeShareButton {
+    border: 2px solid #000;
+  }
+  
+  .floatingButton {
+    border: 3px solid #fff;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .socialButton,
+    .copyButton {
+      border-color: #fff;
+    }
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .socialButton,
+  .copyButton,
+  .nativeShareButton,
+  .floatingButton {
+    transition: none;
+  }
+  
+  .socialButton:hover,
+  .floatingButton:hover {
+    transform: none;
+  }
+  
+  .menuContent {
+    animation: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .floatingShare {
+    display: none;
+  }
+  
+  .socialShare {
+    border: 1px solid #ccc;
+    background: white;
+  }
+}

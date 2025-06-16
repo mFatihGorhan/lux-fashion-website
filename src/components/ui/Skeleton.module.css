@@ -1,0 +1,137 @@
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Variants */
+.rectangular {
+  border-radius: 4px;
+}
+
+.rounded {
+  border-radius: 8px;
+}
+
+.circular {
+  border-radius: 50%;
+}
+
+.text {
+  border-radius: 4px;
+  height: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.textWithMargin {
+  margin-bottom: 0.5rem;
+}
+
+/* Animations */
+.pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.wave {
+  animation: skeleton-wave 1.6s linear infinite;
+}
+
+.none {
+  animation: none;
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes skeleton-wave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Skeleton Card */
+.skeletonCard {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.cardImage {
+  width: 100%;
+  border-radius: 0;
+}
+
+.cardContent {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+  }
+  
+  .skeletonCard {
+    background: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .pulse,
+  .wave {
+    animation: none;
+  }
+  
+  .skeleton {
+    background: #f0f0f0;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .skeleton {
+      background: #2a2a2a;
+    }
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .skeleton {
+    background: #d0d0d0;
+    border: 1px solid #999;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .skeleton {
+      background: #404040;
+      border: 1px solid #666;
+    }
+  }
+}

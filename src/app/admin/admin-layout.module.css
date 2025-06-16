@@ -26,6 +26,18 @@
   overflow-x: auto;
 }
 
+.sidebarLoading {
+  width: 260px;
+  min-height: calc(100vh - 64px);
+  background: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9CA3AF;
+  font-size: 0.875rem;
+  border-right: 1px solid #374151;
+}
+
 @media (max-width: 768px) {
   .adminContent {
     flex-direction: column;

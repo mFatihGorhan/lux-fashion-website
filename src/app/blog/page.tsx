@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
   Calendar, 
@@ -12,85 +12,114 @@ import {
   ArrowRight,
   BookOpen
 } from 'lucide-react'
+import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton'
+import { SectionLoading } from '@/components/ui/LoadingSpinner'
+import { SidebarNewsletter } from '@/components/ui/Newsletter'
+import PageErrorBoundary from '@/components/PageErrorBoundary'
 import styles from './blog.module.css'
 
-// Örnek blog yazıları
-const blogPosts = [
+interface BlogAuthor {
+  id: string
+  name: string
+  avatar?: string
+  bio?: string
+}
+
+interface BlogCategory {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  count?: number
+}
+
+interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content?: string
+  featuredImage?: string
+  category: BlogCategory
+  author: BlogAuthor
+  publishedAt: string
+  updatedAt: string
+  readTime: number
+  featured: boolean
+  tags: string[]
+  views: number
+}
+
+// Default/fallback blog data
+const defaultBlogPosts: BlogPost[] = [
   {
-    id: 1,
+    id: '1',
     title: '2024 Sonbahar/Kış Moda Trendleri: Minimalizm ve Güç',
+    slug: '2024-sonbahar-kis-moda-trendleri',
     excerpt: 'Bu sezon gardırobunuzda olması gereken parçalar ve trend kombinasyon önerileri. Minimalist yaklaşımla maksimum etki yaratmanın sırları.',
-    category: 'Moda Trendleri',
-    author: 'Ayşe Demir',
-    date: '15 Kasım 2024',
-    readTime: '5 dk okuma',
-    image: '/images/blog-1.jpg',
+    category: {
+      id: '1',
+      name: 'Moda Trendleri',
+      slug: 'moda-trendleri'
+    },
+    author: {
+      id: '1',
+      name: 'Ayşe Demir'
+    },
+    publishedAt: '2024-11-15T09:00:00Z',
+    updatedAt: '2024-11-15T09:00:00Z',
+    readTime: 5,
+    featuredImage: '/images/blog-1.jpg',
     featured: true,
-    tags: ['Trend', 'Sonbahar/Kış', 'Minimalizm']
+    tags: ['Trend', 'Sonbahar/Kış', 'Minimalizm'],
+    views: 0
   },
   {
-    id: 2,
+    id: '2',
     title: 'Sürdürülebilir Moda: Kaliteli Kumaş Seçiminin Önemi',
+    slug: 'surdurulebilir-moda-kumac-secimi',
     excerpt: 'Çevre dostu kumaşlar ve sürdürülebilir üretim yöntemleri hakkında bilmeniz gerekenler. Bilinçli tüketimin moda dünyasındaki yeri.',
-    category: 'Sürdürülebilirlik',
-    author: 'Mehmet Kaya',
-    date: '10 Kasım 2024',
-    readTime: '7 dk okuma',
-    image: '/images/blog-2.jpg',
-    tags: ['Sürdürülebilirlik', 'Kumaş', 'Çevre']
+    category: {
+      id: '2',
+      name: 'Sürdürülebilirlik',
+      slug: 'surdurulebilirlik'
+    },
+    author: {
+      id: '2',
+      name: 'Mehmet Kaya'
+    },
+    publishedAt: '2024-11-10T09:00:00Z',
+    updatedAt: '2024-11-10T09:00:00Z',
+    readTime: 7,
+    featuredImage: '/images/blog-2.jpg',
+    featured: false,
+    tags: ['Sürdürülebilirlik', 'Kumaş', 'Çevre'],
+    views: 0
   },
+  // Adding more posts for demo
   {
-    id: 3,
+    id: '3',
     title: 'Ofis Şıklığı: Profesyonel Gardırop Oluşturma Rehberi',
+    slug: 'ofis-sikligi-profesyonel-gardirop',
     excerpt: 'İş hayatında şık ve profesyonel görünmenin püf noktaları. 10 parça ile sonsuz kombin yaratma teknikleri.',
-    category: 'Styling Önerileri',
-    author: 'Zeynep Yılmaz',
-    date: '5 Kasım 2024',
-    readTime: '6 dk okuma',
-    image: '/images/blog-3.jpg',
-    tags: ['İş Giyimi', 'Styling', 'Profesyonel']
-  },
-  {
-    id: 4,
-    title: 'Kapsül Gardırop Nedir? Nasıl Oluşturulur?',
-    excerpt: 'Az parça ile çok kombin yapmanın sırrı: Kapsül gardırop. Temel parçalar ve kombinasyon önerileri.',
-    category: 'Styling Önerileri',
-    author: 'Elif Özkan',
-    date: '1 Kasım 2024',
-    readTime: '8 dk okuma',
-    image: '/images/blog-4.jpg',
-    tags: ['Kapsül Gardırop', 'Minimalizm', 'Styling']
-  },
-  {
-    id: 5,
-    title: 'İpek Bakımı: Lüks Kumaşlarınızı Koruma Rehberi',
-    excerpt: 'İpek, kaşmir ve yün gibi değerli kumaşların bakımı için profesyonel ipuçları. Giysilerinizin ömrünü uzatın.',
-    category: 'Kumaş Bilgisi',
-    author: 'Canan Arslan',
-    date: '28 Ekim 2024',
-    readTime: '4 dk okuma',
-    image: '/images/blog-5.jpg',
-    tags: ['Kumaş Bakımı', 'İpek', 'Lüks']
-  },
-  {
-    id: 6,
-    title: 'Renk Psikolojisi: Giydiğiniz Renkler Ne Anlatıyor?',
-    excerpt: 'Renklerin psikolojik etkileri ve doğru renk seçimiyle yaratacağınız etki. Kişisel stilinizi renklerle güçlendirin.',
-    category: 'Moda Trendleri',
-    author: 'Selin Çelik',
-    date: '20 Ekim 2024',
-    readTime: '5 dk okuma',
-    image: '/images/blog-6.jpg',
-    tags: ['Renk', 'Psikoloji', 'Stil']
+    category: { id: '3', name: 'Styling Önerileri', slug: 'styling-onerileri' },
+    author: { id: '3', name: 'Zeynep Yılmaz' },
+    publishedAt: '2024-11-05T09:00:00Z',
+    updatedAt: '2024-11-05T09:00:00Z',
+    readTime: 6,
+    featuredImage: '/images/blog-3.jpg',
+    featured: false,
+    tags: ['İş Giyimi', 'Styling', 'Profesyonel'],
+    views: 0
   }
 ]
 
-const categories = [
-  { name: 'Tümü', count: blogPosts.length },
-  { name: 'Moda Trendleri', count: 2 },
-  { name: 'Kumaş Bilgisi', count: 1 },
-  { name: 'Styling Önerileri', count: 2 },
-  { name: 'Sürdürülebilirlik', count: 1 }
+const defaultCategories: BlogCategory[] = [
+  { id: 'all', name: 'Tümü', slug: 'all', count: 6 },
+  { id: '1', name: 'Moda Trendleri', slug: 'moda-trendleri', count: 2 },
+  { id: '2', name: 'Kumaş Bilgisi', slug: 'kumac-bilgisi', count: 1 },
+  { id: '3', name: 'Styling Önerileri', slug: 'styling-onerileri', count: 2 },
+  { id: '4', name: 'Sürdürülebilirlik', slug: 'surdurulebilirlik', count: 1 }
 ]
 
 const popularTags = [
@@ -98,20 +127,61 @@ const popularTags = [
   'Kumaş Bakımı', 'Styling', 'Kapsül Gardırop'
 ]
 
-export default function BlogPage() {
-  const [selectedCategory, setSelectedCategory] = useState('Tümü')
+function BlogContent() {
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [categories, setCategories] = useState<BlogCategory[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Filtreleme
-  const filteredPosts = blogPosts.filter(post => {
-    const categoryMatch = selectedCategory === 'Tümü' || post.category === selectedCategory
-    const searchMatch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                       post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                       post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    return categoryMatch && searchMatch
-  })
+  useEffect(() => {
+    fetchBlogData()
+  }, [selectedCategory, searchQuery])
 
-  const featuredPost = blogPosts.find(post => post.featured)
+  const fetchBlogData = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams()
+      
+      if (selectedCategory !== 'all') {
+        params.append('category', selectedCategory)
+      }
+      if (searchQuery.trim()) {
+        params.append('search', searchQuery.trim())
+      }
+
+      const [postsRes, categoriesRes] = await Promise.all([
+        fetch(`/api/blog/posts?${params.toString()}`),
+        fetch('/api/blog/categories')
+      ])
+
+      if (postsRes.ok) {
+        const postsData = await postsRes.json()
+        setPosts(postsData.posts || [])
+      } else {
+        // Fallback to default posts if API fails
+        setPosts(defaultBlogPosts)
+      }
+
+      if (categoriesRes.ok) {
+        const categoriesData = await categoriesRes.json()
+        const allCategory = { id: 'all', name: 'Tümü', slug: 'all', count: posts.length }
+        setCategories([allCategory, ...categoriesData])
+      } else {
+        // Fallback to default categories
+        setCategories(defaultCategories)
+      }
+    } catch (error) {
+      console.error('Error fetching blog data:', error)
+      // Fallback to default data
+      setPosts(defaultBlogPosts)
+      setCategories(defaultCategories)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const featuredPost = posts.find(post => post.featured)
 
   return (
     <main className={styles.main}>
@@ -140,16 +210,16 @@ export default function BlogPage() {
               
               <div className={styles.featuredContent}>
                 <div className={styles.featuredMeta}>
-                  <span className={styles.category}>{featuredPost.category}</span>
+                  <span className={styles.category}>{featuredPost.category.name}</span>
                   <span className={styles.dot}>•</span>
                   <span className={styles.date}>
                     <Calendar size={14} />
-                    {featuredPost.date}
+                    {new Date(featuredPost.publishedAt).toLocaleDateString('tr-TR')}
                   </span>
                 </div>
                 
                 <h2 className={styles.featuredTitle}>
-                  <Link href={`/blog/${featuredPost.id}`}>
+                  <Link href={`/blog/${featuredPost.slug}`}>
                     {featuredPost.title}
                   </Link>
                 </h2>
@@ -159,13 +229,13 @@ export default function BlogPage() {
                 <div className={styles.featuredFooter}>
                   <div className={styles.authorInfo}>
                     <User size={16} />
-                    <span>{featuredPost.author}</span>
+                    <span>{featuredPost.author.name}</span>
                     <span className={styles.dot}>•</span>
                     <Clock size={16} />
-                    <span>{featuredPost.readTime}</span>
+                    <span>{featuredPost.readTime} dk okuma</span>
                   </div>
                   
-                  <Link href={`/blog/${featuredPost.id}`} className={styles.readMore}>
+                  <Link href={`/blog/${featuredPost.slug}`} className={styles.readMore}>
                     <span>Devamını Oku</span>
                     <ArrowRight size={16} />
                   </Link>
@@ -208,15 +278,15 @@ export default function BlogPage() {
                 </h3>
                 <ul className={styles.categoryList}>
                   {categories.map(category => (
-                    <li key={category.name}>
+                    <li key={category.id}>
                       <button
                         className={`${styles.categoryButton} ${
-                          selectedCategory === category.name ? styles.active : ''
+                          selectedCategory === category.slug ? styles.active : ''
                         }`}
-                        onClick={() => setSelectedCategory(category.name)}
+                        onClick={() => setSelectedCategory(category.slug)}
                       >
                         <span>{category.name}</span>
-                        <span className={styles.count}>{category.count}</span>
+                        <span className={styles.count}>{category.count || 0}</span>
                       </button>
                     </li>
                   ))}
@@ -244,64 +314,60 @@ export default function BlogPage() {
 
               {/* Newsletter */}
               <div className={styles.sidebarWidget}>
-                <div className={styles.newsletterBox}>
-                  <h3 className={styles.newsletterTitle}>
-                    Blog Bültenimize Katılın
-                  </h3>
-                  <p className={styles.newsletterText}>
-                    Yeni yazılardan haberdar olun
-                  </p>
-                  <button className={styles.subscribeButton}>
-                    Abone Ol
-                  </button>
-                </div>
+                <SidebarNewsletter />
               </div>
             </aside>
 
             {/* Blog Posts Grid */}
             <div className={styles.postsGrid}>
-              {filteredPosts.length === 0 ? (
+              {loading ? (
+                <SectionLoading text="Blog yazıları yükleniyor..." minHeight="400px" />
+              ) : posts.length === 0 ? (
                 <div className={styles.noResults}>
                   <p>Aramanıza uygun yazı bulunamadı.</p>
                   <button
                     className={styles.clearButton}
                     onClick={() => {
                       setSearchQuery('')
-                      setSelectedCategory('Tümü')
+                      setSelectedCategory('all')
                     }}
                   >
                     Filtreleri Temizle
                   </button>
                 </div>
               ) : (
-                filteredPosts.map((post, index) => (
+                posts.map((post, index) => (
                   <article 
                     key={post.id} 
                     className={styles.postCard}
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
-                    <Link href={`/blog/${post.id}`} className={styles.postImage}>
-                      <div className={styles.imagePlaceholder}>
-                        <BookOpen size={32} />
-                      </div>
-                      <div className={styles.postCategory}>{post.category}</div>
+                    <Link href={`/blog/${post.slug}`} className={styles.postImage}>
+                      {post.featuredImage ? (
+                        <img src={post.featuredImage} alt={post.title} className={styles.postImageTag} />
+                      ) : (
+                        <div className={styles.imagePlaceholder}>
+                          <BookOpen size={32} />
+                        </div>
+                      )}
+                      <div className={styles.postCategory}>{post.category.name}</div>
                     </Link>
                     
                     <div className={styles.postContent}>
                       <div className={styles.postMeta}>
                         <span className={styles.postDate}>
                           <Calendar size={14} />
-                          {post.date}
+                          {new Date(post.publishedAt).toLocaleDateString('tr-TR')}
                         </span>
                         <span className={styles.dot}>•</span>
                         <span className={styles.postRead}>
                           <Clock size={14} />
-                          {post.readTime}
+                          {post.readTime} dk okuma
                         </span>
                       </div>
                       
                       <h3 className={styles.postTitle}>
-                        <Link href={`/blog/${post.id}`}>{post.title}</Link>
+                        <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                       </h3>
                       
                       <p className={styles.postExcerpt}>{post.excerpt}</p>
@@ -309,10 +375,10 @@ export default function BlogPage() {
                       <div className={styles.postFooter}>
                         <div className={styles.postAuthor}>
                           <User size={16} />
-                          <span>{post.author}</span>
+                          <span>{post.author.name}</span>
                         </div>
                         
-                        <Link href={`/blog/${post.id}`} className={styles.postLink}>
+                        <Link href={`/blog/${post.slug}`} className={styles.postLink}>
                           <span>Devamını Oku</span>
                           <ArrowRight size={16} />
                         </Link>
@@ -326,5 +392,13 @@ export default function BlogPage() {
         </div>
       </section>
     </main>
+  )
+}
+
+export default function BlogPage() {
+  return (
+    <PageErrorBoundary pageName="Blog sayfası">
+      <BlogContent />
+    </PageErrorBoundary>
   )
 }

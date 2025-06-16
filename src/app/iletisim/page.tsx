@@ -14,6 +14,7 @@ import {
   User,
   AlertCircle
 } from 'lucide-react'
+import PageErrorBoundary from '@/components/PageErrorBoundary'
 import styles from './contact.module.css'
 
 interface FormData {
@@ -24,7 +25,7 @@ interface FormData {
   message: string
 }
 
-export default function ContactPage() {
+function ContactContent() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -457,5 +458,13 @@ export default function ContactPage() {
         </div>
       </section>
     </main>
+  )
+}
+
+export default function ContactPage() {
+  return (
+    <PageErrorBoundary pageName="İletişim sayfası" showContactInfo={false}>
+      <ContactContent />
+    </PageErrorBoundary>
   )
 }

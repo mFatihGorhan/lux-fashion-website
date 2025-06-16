@@ -124,10 +124,38 @@
   padding: var(--space-md);
 }
 
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: all var(--transition-slow);
+}
+
+.primaryImage .productImage {
+  transform: scale(1);
+}
+
+.primaryImage.hidden .productImage {
+  transform: scale(1.05);
+}
+
+.hoverImage .productImage {
+  transform: scale(1.1);
+}
+
+.hoverImage.visible .productImage {
+  transform: scale(1);
+}
+
 @media (max-width: 768px) {
   .imagePlaceholder {
     font-size: var(--font-xs);
     padding: var(--space-sm);
+  }
+  
+  .productImage {
+    transition: none; /* Disable transitions on mobile for better performance */
   }
 }
 

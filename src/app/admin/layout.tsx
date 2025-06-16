@@ -2,12 +2,16 @@
 
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import AdminHeader from '@/components/admin/layout/AdminHeader'
-import AdminSidebar from '@/components/admin/layout/AdminSidebar'
 import styles from './admin-layout.module.css'
 
-// Disable static generation for admin pages
-export const dynamic = 'force-dynamic'
+const AdminSidebar = dynamic(() => import('@/components/admin/layout/AdminSidebar'), {
+  loading: () => <div className={styles.sidebarLoading}>Loading...</div>,
+  ssr: true
+})
+
+// Admin layout is client-side rendered
 
 export default function AdminLayout({
   children,

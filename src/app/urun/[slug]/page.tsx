@@ -107,7 +107,9 @@ const ProductDetailPage = () => {
           url: window.location.href
         })
       } catch (error) {
-        console.log('Error sharing:', error)
+        // Sharing failed, fall back to copy link
+        navigator.clipboard.writeText(window.location.href)
+        alert('Link kopyalandı!')
       }
     } else {
       navigator.clipboard.writeText(window.location.href)

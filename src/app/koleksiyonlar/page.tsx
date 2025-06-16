@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { ChevronDown, Grid, List } from 'lucide-react'
 import ProductCard from '@/components/ui/ProductCard'
+import PageErrorBoundary from '@/components/PageErrorBoundary'
 import styles from './collections.module.css'
 
 // Örnek ürün verisi
@@ -133,7 +134,7 @@ const sortOptions = [
   { value: 'newest', label: 'En Yeniler' }
 ]
 
-export default function CollectionsPage() {
+function CollectionsContent() {
   const [selectedFilter, setSelectedFilter] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -273,5 +274,13 @@ export default function CollectionsPage() {
       </section>
 
     </main>
+  )
+}
+
+export default function CollectionsPage() {
+  return (
+    <PageErrorBoundary pageName="Koleksiyonlar sayfası">
+      <CollectionsContent />
+    </PageErrorBoundary>
   )
 }
