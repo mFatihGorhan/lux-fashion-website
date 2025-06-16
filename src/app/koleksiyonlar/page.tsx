@@ -109,6 +109,23 @@ const allProducts = [
   }
 ]
 
+const filterOptions = [
+  { value: 'all', label: 'Tüm Ürünler', type: 'all' },
+  // Kategoriler
+  { value: 'category-elbise', label: 'Kategori: Elbise', type: 'category', filterValue: 'Elbise' },
+  { value: 'category-ust-giyim', label: 'Kategori: Üst Giyim', type: 'category', filterValue: 'Üst Giyim' },
+  { value: 'category-alt-giyim', label: 'Kategori: Alt Giyim', type: 'category', filterValue: 'Alt Giyim' },
+  { value: 'category-dis-giyim', label: 'Kategori: Dış Giyim', type: 'category', filterValue: 'Dış Giyim' },
+  { value: 'category-ceket', label: 'Kategori: Ceket', type: 'category', filterValue: 'Ceket' },
+  { value: 'category-etek', label: 'Kategori: Etek', type: 'category', filterValue: 'Etek' },
+  // Koleksiyonlar
+  { value: 'collection-yaz-2024', label: 'Koleksiyon: Yaz 2024', type: 'collection', filterValue: 'Yaz 2024' },
+  { value: 'collection-kis-2024', label: 'Koleksiyon: Kış 2024', type: 'collection', filterValue: 'Kış 2024' },
+  { value: 'collection-business-chic', label: 'Koleksiyon: Business Chic', type: 'collection', filterValue: 'Business Chic' },
+  { value: 'collection-timeless', label: 'Koleksiyon: Timeless', type: 'collection', filterValue: 'Timeless' },
+  { value: 'collection-special-occasions', label: 'Koleksiyon: Special Occasions', type: 'collection', filterValue: 'Special Occasions' },
+]
+
 const sortOptions = [
   { value: 'featured', label: 'Öne Çıkanlar' },
   { value: 'price-asc', label: 'Fiyat: Düşükten Yükseğe' },
@@ -117,11 +134,25 @@ const sortOptions = [
 ]
 
 export default function CollectionsPage() {
+  const [selectedFilter, setSelectedFilter] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
-  // Tüm ürünleri göster
-  const filteredProducts = allProducts
+  // Filtreleme
+  const filteredProducts = allProducts.filter(product => {
+    if (selectedFilter === 'all') return true
+    
+    const option = filterOptions.find(opt => opt.value === selectedFilter)
+    if (!option) return true
+    
+    if (option.type === 'category') {
+      return product.category === option.filterValue
+    } else if (option.type === 'collection') {
+      return product.collection === option.filterValue
+    }
+    
+    return true
+  })
 
   // Sıralama
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -158,6 +189,22 @@ export default function CollectionsPage() {
             </div>
 
             <div className={styles.viewControls}>
+              {/* Filter Dropdown */}
+              <div className={styles.sortDropdown}>
+                <select
+                  value={selectedFilter}
+                  onChange={(e) => setSelectedFilter(e.target.value)}
+                  className={styles.sortSelect}
+                >
+                  {filterOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={16} className={styles.dropdownIcon} />
+              </div>
+
               {/* Sort Dropdown */}
               <div className={styles.sortDropdown}>
                 <select
