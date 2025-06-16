@@ -221,7 +221,7 @@ export default function ProductsPage() {
                       <Eye size={16} />
                     </Link>
                     <Link
-                      href={`/admin/products/${product.id}/edit`}
+                      href={`/admin/products/${product.id}`}
                       className="bg-white text-blue-600 p-2 rounded-full hover:bg-blue-50 shadow-sm"
                       title="Düzenle"
                     >
@@ -251,7 +251,7 @@ export default function ProductsPage() {
                       {product.price}
                     </span>
                     <Link
-                      href={`/admin/products/${product.id}/edit`}
+                      href={`/admin/products/${product.id}`}
                       className="text-blue-600 hover:text-blue-700 text-xs font-medium bg-blue-50 px-2 py-1 rounded"
                     >
                       Düzenle
