@@ -109,7 +109,6 @@ const allProducts = [
   }
 ]
 
-const categories = ['Tümü', 'Elbise', 'Üst Giyim', 'Alt Giyim', 'Dış Giyim', 'Ceket', 'Etek']
 const collections = ['Tümü', 'Yaz 2024', 'Kış 2024', 'Business Chic', 'Timeless', 'Special Occasions']
 const sortOptions = [
   { value: 'featured', label: 'Öne Çıkanlar' },
@@ -119,7 +118,6 @@ const sortOptions = [
 ]
 
 export default function CollectionsPage() {
-  const [selectedCategory, setSelectedCategory] = useState('Tümü')
   const [selectedCollection, setSelectedCollection] = useState('Tümü')
   const [sortBy, setSortBy] = useState('featured')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -127,9 +125,8 @@ export default function CollectionsPage() {
 
   // Filtreleme
   const filteredProducts = allProducts.filter(product => {
-    const categoryMatch = selectedCategory === 'Tümü' || product.category === selectedCategory
     const collectionMatch = selectedCollection === 'Tümü' || product.collection === selectedCollection
-    return categoryMatch && collectionMatch
+    return collectionMatch
   })
 
   // Sıralama
@@ -171,24 +168,6 @@ export default function CollectionsPage() {
             </button>
 
             <div className={styles.desktopFilters}>
-              {/* Category Filter */}
-              <div className={styles.filterGroup}>
-                <label className={styles.filterLabel}>Kategori</label>
-                <div className={styles.filterButtons}>
-                  {categories.map(category => (
-                    <button
-                      key={category}
-                      className={`${styles.filterButton} ${
-                        selectedCategory === category ? styles.active : ''
-                      }`}
-                      onClick={() => setSelectedCategory(category)}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Collection Filter */}
               <div className={styles.filterGroup}>
                 <label className={styles.filterLabel}>Koleksiyon</label>
@@ -264,25 +243,6 @@ export default function CollectionsPage() {
         </div>
         
         <div className={styles.mobileFilterContent}>
-          {/* Category Filter */}
-          <div className={styles.mobileFilterGroup}>
-            <h4>Kategori</h4>
-            {categories.map(category => (
-              <button
-                key={category}
-                className={`${styles.mobileFilterOption} ${
-                  selectedCategory === category ? styles.active : ''
-                }`}
-                onClick={() => {
-                  setSelectedCategory(category)
-                  setIsFilterOpen(false)
-                }}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
           {/* Collection Filter */}
           <div className={styles.mobileFilterGroup}>
             <h4>Koleksiyon</h4>
@@ -330,7 +290,6 @@ export default function CollectionsPage() {
               <button
                 className={styles.resetButton}
                 onClick={() => {
-                  setSelectedCategory('Tümü')
                   setSelectedCollection('Tümü')
                 }}
               >
