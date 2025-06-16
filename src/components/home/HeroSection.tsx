@@ -5,7 +5,21 @@ import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import styles from './HeroSection.module.css'
 
-const slides = [
+interface HeroSlide {
+  id: number
+  title: string
+  subtitle: string
+  description: string
+  imageUrl?: string
+  ctaText: string
+  ctaLink: string
+  isActive: boolean
+  order: number
+  backgroundColor?: string
+  textColor?: string
+}
+
+const defaultSlides = [
   {
     id: 1,
     title: 'Yeni Sezon',
@@ -38,14 +52,47 @@ const slides = [
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [slides, setSlides] = useState(defaultSlides)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const fetchHeroSlides = async () => {
+      try {
+        const response = await fetch('/api/hero-slides')
+        if (response.ok) {
+          const heroSlides: HeroSlide[] = await response.json()
+          if (heroSlides.length > 0) {
+            const formattedSlides = heroSlides.map(slide => ({
+              id: slide.id,
+              title: slide.title,
+              subtitle: slide.subtitle,
+              description: slide.description,
+              gradient: slide.gradient || 'linear-gradient(135deg, #1A1A1A 0%, #3A3A3A 100%)',
+              cta: slide.ctaText,
+              link: slide.ctaLink
+            }))
+            setSlides(formattedSlides)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching hero slides:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchHeroSlides()
+  }, [])
+
+  useEffect(() => {
+    if (loading) return
+    
     const timer = setInterval(() => {
       handleNextSlide()
     }, 6000)
 
     return () => clearInterval(timer)
-  }, [currentSlide])
+  }, [currentSlide, loading])
 
   const handleNextSlide = () => {
     setIsTransitioning(true)
@@ -69,6 +116,29 @@ const HeroSection = () => {
       setCurrentSlide(index)
       setIsTransitioning(false)
     }, 300)
+  }
+
+  if (loading) {
+    return (
+      <section className={styles.hero}>
+        <div className={styles.backgroundWrapper}>
+          <div className={styles.backgroundImage} style={{ background: 'linear-gradient(135deg, #1A1A1A 0%, #3A3A3A 100%)' }}>
+            <div className={styles.imageOverlay} />
+          </div>
+        </div>
+        <div className={styles.content}>
+          <div className={styles.container}>
+            <div className={styles.slideContent}>
+              <span className={styles.subtitle}>Yükleniyor...</span>
+              <h1 className={styles.title}>
+                <span className={styles.titleWord}>Lux Fashion</span>
+              </h1>
+              <p className={styles.description}>İçerik yükleniyor...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (

@@ -1,12 +1,34 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Heart, Eye, ArrowRight } from 'lucide-react'
 import styles from './FeaturedProducts.module.css'
 
-// Örnek ürün verisi
-const products = [
+interface Category {
+  id: string
+  name: string
+  slug: string
+}
+
+interface Product {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  price: number
+  category: Category
+  primaryImage: string
+  primaryImageAlt?: string
+  hoverImage: string
+  hoverImageAlt?: string
+  featured: boolean
+  isActive: boolean
+  colors: string[]
+  badge?: string
+}
+
+const defaultProducts = [
   {
     id: 1,
     name: 'Silk Elegance Elbise',
@@ -88,15 +110,57 @@ const ContactModal: React.FC<ModalProps> = ({ isOpen, onClose, phoneNumber }) =>
 const FeaturedProducts = () => {
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [products, setProducts] = useState(defaultProducts)
+  const [loading, setLoading] = useState(true)
   const phoneNumber = '+90 555 555 55 55'
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await fetch('/api/products/featured')
+        if (response.ok) {
+          const featuredProducts: Product[] = await response.json()
+          if (featuredProducts.length > 0) {
+            const formattedProducts = featuredProducts.map(product => ({
+              id: product.id,
+              name: product.name,
+              category: product.category.name,
+              price: `${product.price.toLocaleString('tr-TR')} TL`,
+              images: {
+                primary: product.primaryImage || '/images/placeholder.jpg',
+                hover: product.hoverImage || product.primaryImage || '/images/placeholder.jpg'
+              },
+              badge: product.badge,
+              colors: product.colors || ['#1A1A1A']
+            }))
+            setProducts(formattedProducts)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching featured products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFeaturedProducts()
+  }, [])
 
   const handleQuickView = (productId: number) => {
     console.log('Quick view for product:', productId)
     // Quick view modal işlevselliği eklenebilir
   }
 
-  const handleGetOffer = () => {
-    setIsModalOpen(true)
+  const handleGetOffer = (product?: any) => {
+    if (product) {
+      const message = encodeURIComponent(
+        `Merhaba! ${product.name} ürünü hakkında bilgi almak istiyorum. Ürün: ${window.location.origin}/urun/${product.id}`
+      )
+      const whatsappNumber = '905555555555'
+      window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank')
+    } else {
+      setIsModalOpen(true)
+    }
   }
 
   return (
@@ -120,7 +184,26 @@ const FeaturedProducts = () => {
 
         {/* Products Grid */}
         <div className={styles.grid}>
-          {products.map((product) => (
+          {loading ? (
+            // Loading skeletons
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className={styles.productCard}>
+                <div className={styles.imageContainer}>
+                  <div className={styles.primaryImage} style={{ background: '#f0f0f0' }}>
+                    <span className={styles.imagePlaceholder}>Yükleniyor...</span>
+                  </div>
+                </div>
+                <div className={styles.productInfo}>
+                  <span className={styles.category}>...</span>
+                  <h3 className={styles.productName}>Yükleniyor...</h3>
+                  <div className={styles.priceRow}>
+                    <span className={styles.price}>...</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            products.map((product) => (
             <article
               key={product.id}
               className={styles.productCard}
@@ -197,14 +280,15 @@ const FeaturedProducts = () => {
                   <span className={styles.price}>{product.price}</span>
                   <button 
                     className={styles.offerButton}
-                    onClick={handleGetOffer}
+                    onClick={() => handleGetOffer(product)}
                   >
                     <span>Teklif Al</span>
                   </button>
                 </div>
               </div>
             </article>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Bottom CTA */}

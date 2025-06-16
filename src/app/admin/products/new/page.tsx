@@ -262,7 +262,7 @@ export default function NewProductPage() {
                 className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 required
               />
-              <p className="text-xs text-gray-500 mt-1">Ana ürün görseli URL'i</p>
+              <p className="text-xs text-gray-500 mt-1">Ana ürün görseli URL</p>
             </div>
 
             <div>
@@ -276,7 +276,7 @@ export default function NewProductPage() {
                 placeholder="https://example.com/hover-image.jpg"
                 className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               />
-              <p className="text-xs text-gray-500 mt-1">Mouse hover'da gösterilecek görsel</p>
+              <p className="text-xs text-gray-500 mt-1">Mouse hover da gösterilecek görsel</p>
             </div>
           </div>
         </div>

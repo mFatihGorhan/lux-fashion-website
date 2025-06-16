@@ -96,7 +96,7 @@ model Product {
   name          String
   slug          String    @unique
   description   String?
-  price         String    // "2,850 TL" formatında
+  price         Decimal   // Numeric price in TL
   primaryImage  String
   primaryImageAlt String?
   hoverImage    String
