@@ -78,24 +78,51 @@ export default function ContactPage() {
     }
     
     setIsSubmitting(true)
+    setErrors({})
     
-    // Simüle edilmiş form gönderimi
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setIsSubmitted(true)
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       })
-      
-      // 3 saniye sonra başarı mesajını kaldır
-      setTimeout(() => {
-        setIsSubmitted(false)
-      }, 3000)
-    }, 2000)
+
+      const result = await response.json()
+
+      if (response.ok) {
+        setIsSubmitted(true)
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        })
+        
+        // 5 saniye sonra başarı mesajını kaldır
+        setTimeout(() => {
+          setIsSubmitted(false)
+        }, 5000)
+      } else {
+        // Handle validation errors from server
+        if (result.details) {
+          const serverErrors: Partial<FormData> = {}
+          result.details.forEach((detail: any) => {
+            serverErrors[detail.field as keyof FormData] = detail.message
+          })
+          setErrors(serverErrors)
+        } else {
+          alert(`Hata: ${result.error}`)
+        }
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      alert('Form gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

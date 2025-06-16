@@ -4,10 +4,17 @@ import { authOptions } from '@/lib/auth/config'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-const categorySchema = z.object({
-  name: z.string().min(1, 'Kategori adı gereklidir'),
-  slug: z.string().min(1, 'Kategori slug gereklidir'),
-  description: z.string().optional(),
+const heroSlideSchema = z.object({
+  title: z.string().min(1, 'Başlık gereklidir'),
+  subtitle: z.string().min(1, 'Alt başlık gereklidir'),
+  description: z.string().min(1, 'Açıklama gereklidir'),
+  imageUrl: z.string().url('Geçerli bir resim URL\'si gereklidir'),
+  imageAlt: z.string().optional(),
+  gradient: z.string().min(1, 'Gradient gereklidir'),
+  ctaText: z.string().min(1, 'Buton metni gereklidir'),
+  ctaLink: z.string().min(1, 'Buton linki gereklidir'),
+  secondaryCtaText: z.string().optional(),
+  secondaryCtaLink: z.string().optional(),
   order: z.number().int().min(0).default(0),
   isActive: z.boolean().default(true),
 })
@@ -20,22 +27,15 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const categories = await prisma.category.findMany({
+    const heroSlides = await prisma.heroSlide.findMany({
       orderBy: {
         order: 'asc'
-      },
-      include: {
-        _count: {
-          select: {
-            products: true
-          }
-        }
       }
     })
 
-    return NextResponse.json(categories)
+    return NextResponse.json(heroSlides)
   } catch (error) {
-    console.error('Categories fetch error:', error)
+    console.error('Hero slides fetch error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -49,37 +49,13 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const validatedData = categorySchema.parse(body)
+    const validatedData = heroSlideSchema.parse(body)
 
-    // Check if category with same name or slug exists
-    const existingCategory = await prisma.category.findFirst({
-      where: {
-        OR: [
-          { name: validatedData.name },
-          { slug: validatedData.slug }
-        ]
-      }
+    const heroSlide = await prisma.heroSlide.create({
+      data: validatedData
     })
 
-    if (existingCategory) {
-      return NextResponse.json(
-        { error: 'Bu isim veya slug ile kategori zaten mevcut' }, 
-        { status: 400 }
-      )
-    }
-
-    const category = await prisma.category.create({
-      data: validatedData,
-      include: {
-        _count: {
-          select: {
-            products: true
-          }
-        }
-      }
-    })
-
-    return NextResponse.json(category, { status: 201 })
+    return NextResponse.json(heroSlide, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -88,7 +64,7 @@ export async function POST(request: Request) {
       )
     }
     
-    console.error('Category create error:', error)
+    console.error('Hero slide create error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

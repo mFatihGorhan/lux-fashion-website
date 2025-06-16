@@ -10,7 +10,8 @@ import {
   FileText,
   Image,
   Settings,
-  Monitor
+  Monitor,
+  Mail
 } from 'lucide-react'
 import styles from './AdminSidebar.module.css'
 
@@ -41,6 +42,11 @@ const menuItems = [
     href: '/admin/hero',
   },
   {
+    icon: Mail,
+    label: 'Iletisim',
+    href: '/admin/contact',
+  },
+  {
     icon: FileText,
     label: 'Blog',
     href: '/admin/blog',
@@ -59,6 +65,10 @@ const menuItems = [
     icon: Settings,
     label: 'Ayarlar',
     href: '/admin/settings',
+    submenu: [
+      { label: 'Site Ayarlari', href: '/admin/settings' },
+      { label: 'SEO Yonetimi', href: '/admin/seo' },
+    ]
   },
 ]
 
