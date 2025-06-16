@@ -246,28 +246,8 @@ const ProductDetailPage = () => {
               {/* Price */}
               <div className={styles.priceContainer}>
                 <span className={styles.currentPrice}>{formatPrice(product.price)}</span>
-                {product.originalPrice && (
-                  <span className={styles.originalPrice}>
-                    {formatPrice(product.originalPrice)}
-                  </span>
-                )}
-                {product.originalPrice && (
-                  <span className={styles.discount}>
-                    %{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)} İndirim
-                  </span>
-                )}
               </div>
 
-              {/* Stock Status */}
-              <div className={styles.stockStatus}>
-                {product.stock === 0 ? (
-                  <span className={styles.outOfStock}>⚠️ Stokta Yok</span>
-                ) : product.stock < 5 ? (
-                  <span className={styles.lowStock}>⚡ Son {product.stock} Parça</span>
-                ) : (
-                  <span className={styles.inStock}>✅ Stokta Mevcut</span>
-                )}
-              </div>
             </div>
 
             {/* Description */}
@@ -341,27 +321,6 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Product Details */}
-            <div className={styles.productDetails}>
-              {product.materials && (
-                <div className={styles.detailItem}>
-                  <h4>Malzeme</h4>
-                  <p>{product.materials}</p>
-                </div>
-              )}
-              {product.care && (
-                <div className={styles.detailItem}>
-                  <h4>Bakım Talimatları</h4>
-                  <p>{product.care}</p>
-                </div>
-              )}
-              {product.details && (
-                <div className={styles.detailItem}>
-                  <h4>Detaylar</h4>
-                  <p>{product.details}</p>
-                </div>
-              )}
-            </div>
           </div>
         </div>
 

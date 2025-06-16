@@ -10,7 +10,7 @@ export async function GET(
     
     const relatedProducts = await prisma.product.findMany({
       where: {
-        categoryId: parseInt(categoryId),
+        categoryId: categoryId,
         isActive: true
       },
       include: {

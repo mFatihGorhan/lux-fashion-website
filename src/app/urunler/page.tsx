@@ -19,7 +19,7 @@ interface Category {
 }
 
 interface Product {
-  id: number
+  id: string
   name: string
   slug: string
   description?: string
@@ -41,7 +41,7 @@ const ProductsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'name'>('newest')
-  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,11 +86,11 @@ const ProductsPage = () => {
         case 'name':
           return a.name.localeCompare(b.name, 'tr')
         default:
-          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          return b.id.localeCompare(a.id)
       }
     })
 
-  const handleQuickView = (productId: number) => {
+  const handleQuickView = (productId: string) => {
     console.log('Quick view for product:', productId)
   }
 
@@ -149,7 +149,7 @@ const ProductsPage = () => {
             <div className={styles.filterGroup}>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'newest' | 'price-low' | 'price-high' | 'name')}
                 className={styles.filterSelect}
               >
                 <option value="newest">En Yeni</option>

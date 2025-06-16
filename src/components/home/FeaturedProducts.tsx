@@ -30,7 +30,7 @@ interface Product {
 
 const defaultProducts = [
   {
-    id: 1,
+    id: '1',
     name: 'Silk Elegance Elbise',
     category: 'Elbise',
     price: '2,850 TL',
@@ -42,7 +42,7 @@ const defaultProducts = [
     colors: ['#1A1A1A', '#D4B5A0', '#8B7355']
   },
   {
-    id: 2,
+    id: '2',
     name: 'Minimal Blazer',
     category: 'Ceket',
     price: '3,200 TL',
@@ -54,7 +54,7 @@ const defaultProducts = [
     colors: ['#1A1A1A', '#F5F5F3']
   },
   {
-    id: 3,
+    id: '3',
     name: 'Cashmere Touch Kazak',
     category: 'Üst Giyim',
     price: '1,950 TL',
@@ -65,7 +65,7 @@ const defaultProducts = [
     colors: ['#D4B5A0', '#8B7355', '#666666']
   },
   {
-    id: 4,
+    id: '4',
     name: 'Wide Leg Pantolon',
     category: 'Alt Giyim',
     price: '2,450 TL',
@@ -108,7 +108,7 @@ const ContactModal: React.FC<ModalProps> = ({ isOpen, onClose, phoneNumber }) =>
 }
 
 const FeaturedProducts = () => {
-  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [products, setProducts] = useState(defaultProducts)
   const [loading, setLoading] = useState(true)
@@ -146,12 +146,12 @@ const FeaturedProducts = () => {
     fetchFeaturedProducts()
   }, [])
 
-  const handleQuickView = (productId: number) => {
+  const handleQuickView = (productId: string) => {
     console.log('Quick view for product:', productId)
     // Quick view modal işlevselliği eklenebilir
   }
 
-  const handleGetOffer = (product?: any) => {
+  const handleGetOffer = (product?: {id: string, name: string}) => {
     if (product) {
       const message = encodeURIComponent(
         `Merhaba! ${product.name} ürünü hakkında bilgi almak istiyorum. Ürün: ${window.location.origin}/urun/${product.id}`

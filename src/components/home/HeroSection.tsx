@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import styles from './HeroSection.module.css'
@@ -17,6 +17,7 @@ interface HeroSlide {
   order: number
   backgroundColor?: string
   textColor?: string
+  gradient?: string
 }
 
 const defaultSlides = [
@@ -84,6 +85,14 @@ const HeroSection = () => {
     fetchHeroSlides()
   }, [])
 
+  const handleNextSlide = useCallback(() => {
+    setIsTransitioning(true)
+    setTimeout(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length)
+      setIsTransitioning(false)
+    }, 300)
+  }, [slides.length])
+
   useEffect(() => {
     if (loading) return
     
@@ -92,15 +101,8 @@ const HeroSection = () => {
     }, 6000)
 
     return () => clearInterval(timer)
-  }, [currentSlide, loading])
+  }, [currentSlide, loading, handleNextSlide])
 
-  const handleNextSlide = () => {
-    setIsTransitioning(true)
-    setTimeout(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length)
-      setIsTransitioning(false)
-    }, 300)
-  }
 
   const handlePrevSlide = () => {
     setIsTransitioning(true)

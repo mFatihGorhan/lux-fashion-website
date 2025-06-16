@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { MessageCircle, X } from 'lucide-react'
+import { MessageCircle } from 'lucide-react'
 import styles from './WhatsAppButton.module.css'
 
 interface WhatsAppButtonProps {

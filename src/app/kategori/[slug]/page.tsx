@@ -21,7 +21,7 @@ interface Category {
 }
 
 interface Product {
-  id: number
+  id: string
   name: string
   slug: string
   description?: string
@@ -48,7 +48,7 @@ const CategoryPage = () => {
   const [priceRange, setPriceRange] = useState<{min: number, max: number}>({min: 0, max: 10000})
   const [showOnlyInStock, setShowOnlyInStock] = useState(false)
   const [showOnlyFeatured, setShowOnlyFeatured] = useState(false)
-  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchCategoryData = async () => {
@@ -107,14 +107,14 @@ const CategoryPage = () => {
         case 'name':
           return a.name.localeCompare(b.name, 'tr')
         default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          return b.id.localeCompare(a.id)
       }
     })
 
     setFilteredProducts(filtered)
   }, [products, searchTerm, sortBy, priceRange, showOnlyInStock, showOnlyFeatured])
 
-  const handleQuickView = (productId: number) => {
+  const handleQuickView = (productId: string) => {
     console.log('Quick view for product:', productId)
   }
 
@@ -207,7 +207,7 @@ const CategoryPage = () => {
             <div className={styles.filterGroup}>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'newest' | 'price-low' | 'price-high' | 'name')}
                 className={styles.filterSelect}
               >
                 <option value="newest">En Yeni</option>
@@ -312,7 +312,7 @@ const CategoryPage = () => {
               <span>Aktif Filtreler:</span>
               {searchTerm && (
                 <span className={styles.filterTag}>
-                  Arama: "{searchTerm}"
+                  Arama: &quot;{searchTerm}&quot;
                   <button onClick={() => setSearchTerm('')}>×</button>
                 </span>
               )}
