@@ -2,7 +2,8 @@ import { Analytics } from '@vercel/analytics/react'
 
 declare global {
   interface Window {
-    gtag: (command: string, targetId: string, config?: any) => void
+    gtag: (command: string, targetId: string | Date, config?: any) => void
+    dataLayer: any[]
   }
 }
 
@@ -21,11 +22,9 @@ export const initGA = () => {
 
   // Initialize gtag
   window.gtag = function() {
-    // @ts-ignore
-    dataLayer.push(arguments)
+    window.dataLayer.push(arguments)
   }
   
-  // @ts-ignore
   window.dataLayer = window.dataLayer || []
   
   window.gtag('js', new Date())
