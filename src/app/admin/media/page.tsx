@@ -37,6 +37,19 @@ export default function MediaPage() {
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [showModal])
+
   useEffect(() => {
     fetchMedia()
   }, [currentPage])
@@ -432,35 +445,47 @@ export default function MediaPage() {
 
       {/* Media Detail Modal */}
       {showModal && selectedMedia && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 50,
-          padding: '1rem'
-        }}>
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50,
+            padding: '1rem',
+            overflowY: 'auto'
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowModal(false)
+            }
+          }}
+        >
           <div style={{
             backgroundColor: '#1F2937',
             borderRadius: '0.75rem',
-            padding: '2rem',
+            padding: '1.5rem',
             width: '100%',
-            maxWidth: '800px',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            border: '1px solid #374151'
+            maxWidth: '700px',
+            maxHeight: 'calc(100vh - 2rem)',
+            overflow: 'hidden',
+            border: '1px solid #374151',
+            display: 'flex',
+            flexDirection: 'column',
+            margin: '1rem 0'
           }}>
             {/* Header */}
             <div style={{ 
               display: 'flex', 
               justifyContent: 'space-between', 
               alignItems: 'start',
-              marginBottom: '1.5rem'
+              marginBottom: '1rem',
+              flexShrink: 0
             }}>
               <h2 style={{ 
                 fontSize: '1.5rem', 
@@ -485,32 +510,38 @@ export default function MediaPage() {
               </button>
             </div>
 
-            {/* Image Preview */}
-            <div style={{
-              backgroundColor: '#374151',
-              borderRadius: '0.5rem',
-              padding: '1rem',
-              marginBottom: '1.5rem',
-              textAlign: 'center'
-            }}>
-              <img
-                src={selectedMedia.url}
-                alt={selectedMedia.alt}
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '400px',
-                  objectFit: 'contain',
-                  borderRadius: '0.375rem'
-                }}
-              />
-            </div>
-
-            {/* File Info */}
+            {/* Scrollable Content */}
             <div style={{ 
-              display: 'grid', 
-              gap: '1rem',
-              marginBottom: '1.5rem'
+              flex: 1, 
+              overflowY: 'auto',
+              paddingRight: '0.5rem'
             }}>
+              {/* Image Preview */}
+              <div style={{
+                backgroundColor: '#374151',
+                borderRadius: '0.5rem',
+                padding: '1rem',
+                marginBottom: '1rem',
+                textAlign: 'center'
+              }}>
+                <img
+                  src={selectedMedia.url}
+                  alt={selectedMedia.alt}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '300px',
+                    objectFit: 'contain',
+                    borderRadius: '0.375rem'
+                  }}
+                />
+              </div>
+
+              {/* File Info */}
+              <div style={{ 
+                display: 'grid', 
+                gap: '1rem',
+                marginBottom: '1rem'
+              }}>
               <div>
                 <h3 style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.25rem', color: '#D1D5DB' }}>
                   Dosya URL
@@ -573,14 +604,36 @@ export default function MediaPage() {
                   {formatDate(selectedMedia.createdAt)}
                 </p>
               </div>
+              </div>
             </div>
 
             {/* Actions */}
             <div style={{ 
               display: 'flex', 
               gap: '1rem', 
-              justifyContent: 'end'
+              justifyContent: 'end',
+              marginTop: '1rem',
+              flexShrink: 0,
+              borderTop: '1px solid #374151',
+              paddingTop: '1rem'
             }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1rem',
+                  backgroundColor: '#6B7280',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                Kapat
+              </button>
               <button
                 onClick={() => handleDelete(selectedMedia.id)}
                 style={{

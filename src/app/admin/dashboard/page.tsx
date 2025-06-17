@@ -3,38 +3,15 @@
 import { useAuth } from '@/lib/auth/hooks'
 import Link from 'next/link'
 import { Package, FileText, Image, Settings, TrendingUp, Users } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import styles from './dashboard.module.css'
 
-const statsCards = [
-  {
-    title: 'Toplam Urun',
-    value: '24',
-    icon: Package,
-    color: '#60A5FA',
-    href: '/admin/products'
-  },
-  {
-    title: 'Blog Yazisi',
-    value: '12',
-    icon: FileText,
-    color: '#34D399',
-    href: '/admin/blog/posts'
-  },
-  {
-    title: 'Medya Dosyasi',
-    value: '156',
-    icon: Image,
-    color: '#F59E0B',
-    href: '/admin/media'
-  },
-  {
-    title: 'Ziyaretci',
-    value: '1,234',
-    icon: TrendingUp,
-    color: '#EF4444',
-    href: '/admin/settings'
-  }
-]
+interface DashboardStats {
+  products: number
+  blogPosts: number
+  categories: number
+  collections: number
+}
 
 const quickActions = [
   {
@@ -69,6 +46,79 @@ const quickActions = [
 
 export default function AdminDashboard() {
   const { user } = useAuth()
+  const [stats, setStats] = useState<DashboardStats>({
+    products: 0,
+    blogPosts: 0,
+    categories: 0,
+    collections: 0
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true)
+      
+      const [productsRes, blogRes, categoriesRes, collectionsRes] = await Promise.all([
+        fetch('/api/admin/products'),
+        fetch('/api/admin/blog/posts'),
+        fetch('/api/admin/categories'),
+        fetch('/api/admin/collections')
+      ])
+
+      const [products, blogPosts, categories, collections] = await Promise.all([
+        productsRes.ok ? productsRes.json() : { products: [] },
+        blogRes.ok ? blogRes.json() : { posts: [] },
+        categoriesRes.ok ? categoriesRes.json() : { categories: [] },
+        collectionsRes.ok ? collectionsRes.json() : { collections: [] }
+      ])
+
+      setStats({
+        products: Array.isArray(products) ? products.length : (products.products?.length || 0),
+        blogPosts: Array.isArray(blogPosts) ? blogPosts.length : (blogPosts.posts?.length || 0),
+        categories: Array.isArray(categories) ? categories.length : (categories.categories?.length || 0),
+        collections: Array.isArray(collections) ? collections.length : (collections.collections?.length || 0)
+      })
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const statsCards = [
+    {
+      title: 'Toplam Ürün',
+      value: loading ? '...' : stats.products.toString(),
+      icon: Package,
+      color: '#60A5FA',
+      href: '/admin/products'
+    },
+    {
+      title: 'Blog Yazısı',
+      value: loading ? '...' : stats.blogPosts.toString(),
+      icon: FileText,
+      color: '#34D399',
+      href: '/admin/blog/posts'
+    },
+    {
+      title: 'Kategori',
+      value: loading ? '...' : stats.categories.toString(),
+      icon: Image,
+      color: '#F59E0B',
+      href: '/admin/categories'
+    },
+    {
+      title: 'Koleksiyon',
+      value: loading ? '...' : stats.collections.toString(),
+      icon: TrendingUp,
+      color: '#EF4444',
+      href: '/admin/collections'
+    }
+  ]
 
   return (
     <div className={styles.dashboard}>

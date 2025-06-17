@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, Package, TrendingUp, Image } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import adminStyles from '@/styles/admin/admin.module.css'
+import ImageUpload from '@/components/admin/ui/ImageUpload'
+
+// Dynamically import RichTextEditor to avoid SSR issues
+const RichTextEditor = dynamic(() => import('@/components/admin/ui/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
+})
 
 interface Category {
   id: string
@@ -27,6 +36,7 @@ export default function NewProductPage() {
     price: '',
     primaryImage: '',
     hoverImage: '',
+    additionalImages: [] as string[],
     badge: '',
     categoryId: '',
     collectionId: '',
@@ -139,141 +149,159 @@ export default function NewProductPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Information */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-            <Package size={20} />
-            Temel Bilgiler
-          </h2>
+        <div className={adminStyles.card}>
+          <div className={adminStyles.cardHeader}>
+            <h2 className={adminStyles.cardTitle}>
+              <Package size={20} />
+              Temel Bilgiler
+            </h2>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ürün Adı *
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={handleNameChange}
-                placeholder="Ürün adını girin"
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                required
-              />
+              <div className={adminStyles.formGroup}>
+                <label className={adminStyles.label}>
+                  Ürün Adı *
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={handleNameChange}
+                  placeholder="Ürün adını girin"
+                  className={adminStyles.input}
+                  required
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                URL Slug
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                placeholder="otomatik-oluşturulur"
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
-                readOnly
-              />
+              <div className={adminStyles.formGroup}>
+                <label className={adminStyles.label}>
+                  URL Slug
+                </label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                  placeholder="otomatik-oluşturulur"
+                  className={adminStyles.input}
+                  readOnly
+                  style={{ opacity: 0.7 }}
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kategori *
-              </label>
-              <select
-                value={formData.categoryId}
-                onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                required
-              >
-                <option value="">Kategori seçin</option>
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              <div className={adminStyles.formGroup}>
+                <label className={adminStyles.label}>
+                  Kategori *
+                </label>
+                <select
+                  value={formData.categoryId}
+                  onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
+                  className={adminStyles.select}
+                  required
+                >
+                  <option value="">Kategori seçin</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Koleksiyon *
-              </label>
-              <select
-                value={formData.collectionId}
-                onChange={(e) => setFormData(prev => ({ ...prev, collectionId: e.target.value }))}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                required
-              >
-                <option value="">Koleksiyon seçin</option>
-                {collections.map(collection => (
-                  <option key={collection.id} value={collection.id}>
-                    {collection.name}
-                  </option>
-                ))}
-              </select>
+              <div className={adminStyles.formGroup}>
+                <label className={adminStyles.label}>
+                  Koleksiyon *
+                </label>
+                <select
+                  value={formData.collectionId}
+                  onChange={(e) => setFormData(prev => ({ ...prev, collectionId: e.target.value }))}
+                  className={adminStyles.select}
+                  required
+                >
+                  <option value="">Koleksiyon seçin</option>
+                  {collections.map(collection => (
+                    <option key={collection.id} value={collection.id}>
+                      {collection.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ürün Açıklaması
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                rows={4}
-                placeholder="Ürün hakkında detaylı bilgi verin"
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-              />
+              <div className={adminStyles.formGroup}>
+                <label className={adminStyles.label}>
+                  Ürün Açıklaması
+                </label>
+                <RichTextEditor
+                  value={formData.description}
+                  onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
+                  placeholder="Ürün hakkında detaylı bilgi verin"
+                  height={300}
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Pricing & Settings */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-            <TrendingUp size={20} />
-            Fiyat ve Ayarlar
-          </h2>
+        <div className={adminStyles.card}>
+          <div className={adminStyles.cardHeader}>
+            <h2 className={adminStyles.cardTitle}>
+              <TrendingUp size={20} />
+              Fiyat ve Ayarlar
+            </h2>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Fiyat *
-              </label>
-              <input
-                type="text"
-                value={formData.price}
-                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-                placeholder="2,850 TL"
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                required
-              />
+              <div className={adminStyles.formGroup}>
+                <label className={adminStyles.label}>
+                  Fiyat *
+                </label>
+                <input
+                  type="text"
+                  value={formData.price}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                  placeholder="2850"
+                  className={adminStyles.input}
+                  required
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Badge
-              </label>
-              <input
-                type="text"
-                value={formData.badge}
-                onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
-                placeholder="Yeni, Limited Edition, Son Parçalar"
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              />
+              <div className={adminStyles.formGroup}>
+                <label className={adminStyles.label}>
+                  Badge
+                </label>
+                <input
+                  type="text"
+                  value={formData.badge}
+                  onChange={(e) => setFormData(prev => ({ ...prev, badge: e.target.value }))}
+                  placeholder="Yeni, Limited Edition, Son Parçalar"
+                  className={adminStyles.input}
+                />
+              </div>
             </div>
 
             <div className="lg:col-span-2">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-700 rounded-lg p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.featured}
                     onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                    className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-5 h-5 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-700"
                   />
                   <div>
-                    <span className="text-sm font-medium text-gray-900">Öne Çıkarılsın</span>
-                    <p className="text-xs text-gray-600">Bu ürün ana sayfada öne çıkan ürünler bölümünde görünür</p>
+                    <span className="text-sm font-medium text-gray-100">Öne Çıkarılsın</span>
+                    <p className="text-xs text-gray-300">Bu ürün ana sayfada öne çıkan ürünler bölümünde görünür</p>
                   </div>
                 </label>
               </div>
@@ -282,40 +310,66 @@ export default function NewProductPage() {
         </div>
 
         {/* Images */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
-            <Image size={20} />
-            Ürün Görselleri
-          </h2>
+        <div className={adminStyles.card}>
+          <div className={adminStyles.cardHeader}>
+            <h2 className={adminStyles.cardTitle}>
+              <Image size={20} />
+              Ürün Görselleri
+            </h2>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ana Görsel URL *
-              </label>
-              <input
-                type="url"
-                value={formData.primaryImage}
-                onChange={(e) => setFormData(prev => ({ ...prev, primaryImage: e.target.value }))}
-                placeholder="https://example.com/image.jpg"
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">Ana ürün görseli URL</p>
-            </div>
+            <ImageUpload
+              label="Ana Görsel *"
+              value={formData.primaryImage}
+              onChange={(url) => setFormData(prev => ({ ...prev, primaryImage: url }))}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Hover Görsel URL
-              </label>
-              <input
-                type="url"
-                value={formData.hoverImage}
-                onChange={(e) => setFormData(prev => ({ ...prev, hoverImage: e.target.value }))}
-                placeholder="https://example.com/hover-image.jpg"
-                className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              />
-              <p className="text-xs text-gray-500 mt-1">Mouse hover da gösterilecek görsel</p>
+            <ImageUpload
+              label="Hover Görseli"
+              value={formData.hoverImage}
+              onChange={(url) => setFormData(prev => ({ ...prev, hoverImage: url }))}
+            />
+            
+            <div className="lg:col-span-2">
+              <label className={adminStyles.label}>Ek Görseller</label>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {formData.additionalImages.map((url, index) => (
+                  <div key={index} className={adminStyles.imagePreview}>
+                    <img src={url} alt={`Ek görsel ${index + 1}`} />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newImages = formData.additionalImages.filter((_, i) => i !== index)
+                        setFormData(prev => ({ ...prev, additionalImages: newImages }))
+                      }}
+                      className={adminStyles.removeImage}
+                      title="Görseli kaldır"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                
+                {formData.additionalImages.length < 6 && (
+                  <ImageUpload
+                    label=""
+                    value=""
+                    onChange={(url) => {
+                      if (url) {
+                        setFormData(prev => ({
+                          ...prev,
+                          additionalImages: [...prev.additionalImages, url]
+                        }))
+                      }
+                    }}
+                    className="h-full"
+                  />
+                )}
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                Maksimum 6 ek görsel ekleyebilirsiniz
+              </p>
             </div>
           </div>
         </div>
@@ -324,14 +378,14 @@ export default function NewProductPage() {
         <div className="flex flex-col sm:flex-row gap-4 sm:justify-end">
           <Link
             href="/admin/products"
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-center font-medium"
+            className={adminStyles.btnSecondary}
           >
             İptal
           </Link>
           <button
             type="submit"
             disabled={loading}
-            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium transition-all shadow-lg hover:shadow-xl"
+            className={`${adminStyles.btnPrimary} ${loading ? adminStyles.loading : ''}`}
           >
             <Save size={18} />
             {loading ? 'Kaydediliyor...' : 'Ürünü Kaydet'}

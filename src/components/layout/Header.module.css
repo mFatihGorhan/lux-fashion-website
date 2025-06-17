@@ -57,6 +57,7 @@
 
 .phoneLink:hover {
   opacity: 0.8;
+  transform: translateY(-1px);
 }
 
 /* Main Header Styles */
@@ -193,7 +194,13 @@
   background: var(--primary);
   color: white;
   border-color: var(--primary);
-  transform: scale(1.05);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.searchButton:active {
+  transform: scale(0.95);
+  transition: all 0.1s ease;
 }
 
 .ctaButton {

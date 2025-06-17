@@ -12,11 +12,13 @@ import {
   IMAGE_DIMENSIONS,
   PLACEHOLDER_IMAGE 
 } from '@/lib/imageUtils'
+import QuickViewModal from './QuickViewModal'
 import styles from './ProductCard.module.css'
 
 interface Product {
   id: number
   name: string
+  slug?: string
   category: string
   collection?: string
   price: string
@@ -42,6 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [isHovered, setIsHovered] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false)
 
   const handleGetOffer = () => {
     setIsModalOpen(true)
@@ -60,14 +63,31 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {product.badge && (
               <span className={styles.badge}>{product.badge}</span>
             )}
-            <div 
-              className={styles.listImage}
-              style={{
-                background: `linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%)`
-              }}
-            >
-              <span className={styles.imagePlaceholder}>{product.name}</span>
-            </div>
+            {product.images.primary && product.images.primary !== '' ? (
+              <Image
+                src={product.images.primary}
+                alt={product.name || 'Product image'}
+                width={200}
+                height={300}
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL={generateBlurDataURL()}
+                className={styles.listImage}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = PLACEHOLDER_IMAGE
+                }}
+              />
+            ) : (
+              <div 
+                className={styles.listImagePlaceholder}
+                style={{
+                  background: `linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%)`
+                }}
+              >
+                <span className={styles.imagePlaceholder}>{product.name}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -121,42 +141,54 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Image Container */}
-        <Link href={`/urun/${product.id}`} className={styles.imageContainer}>
+        <Link href={`/urun/${product.slug || product.id}`} className={styles.imageContainer}>
           <div className={`${styles.primaryImage} ${isHovered ? styles.hidden : ''}`}>
-            <Image
-              src={product.images.primary || PLACEHOLDER_IMAGE}
-              alt={product.name}
-              width={IMAGE_DIMENSIONS.productCard.width}
-              height={IMAGE_DIMENSIONS.productCard.height}
-              loading={getLoadingStrategy(index)}
-              priority={shouldPrioritizeImage(index)}
-              placeholder="blur"
-              blurDataURL={generateBlurDataURL()}
-              sizes={getImageSizes(viewMode)}
-              className={styles.productImage}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.src = PLACEHOLDER_IMAGE
-              }}
-            />
+            {product.images.primary && product.images.primary !== '' ? (
+              <Image
+                src={product.images.primary}
+                alt={product.name || 'Product image'}
+                width={IMAGE_DIMENSIONS.productCard.width}
+                height={IMAGE_DIMENSIONS.productCard.height}
+                loading={getLoadingStrategy(index)}
+                priority={shouldPrioritizeImage(index)}
+                placeholder="blur"
+                blurDataURL={generateBlurDataURL()}
+                sizes={getImageSizes(viewMode)}
+                className={styles.productImage}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = PLACEHOLDER_IMAGE
+                }}
+              />
+            ) : (
+              <div className={styles.placeholderImage}>
+                <span>{product.name || 'Product'}</span>
+              </div>
+            )}
           </div>
           
           <div className={`${styles.hoverImage} ${isHovered ? styles.visible : ''}`}>
-            <Image
-              src={product.images.hover || product.images.primary || PLACEHOLDER_IMAGE}
-              alt={`${product.name} - hover view`}
-              width={IMAGE_DIMENSIONS.productCard.width}
-              height={IMAGE_DIMENSIONS.productCard.height}
-              loading="lazy"
-              placeholder="blur"
-              blurDataURL={generateBlurDataURL()}
-              sizes={getImageSizes(viewMode)}
-              className={styles.productImage}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.src = PLACEHOLDER_IMAGE
-              }}
-            />
+            {(product.images.hover || product.images.primary) && (product.images.hover !== '' || product.images.primary !== '') ? (
+              <Image
+                src={product.images.hover || product.images.primary || PLACEHOLDER_IMAGE}
+                alt={`${product.name || 'Product'} - hover view`}
+                width={IMAGE_DIMENSIONS.productCard.width}
+                height={IMAGE_DIMENSIONS.productCard.height}
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL={generateBlurDataURL()}
+                sizes={getImageSizes(viewMode)}
+                className={styles.productImage}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = PLACEHOLDER_IMAGE
+                }}
+              />
+            ) : (
+              <div className={styles.placeholderImage}>
+                <span>Hover: {product.name || 'Product'}</span>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -165,7 +197,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               className={styles.actionButton}
               onClick={(e) => {
                 e.preventDefault()
-                // TODO: Implement quick view modal
+                setIsQuickViewOpen(true)
               }}
               aria-label="Hızlı Görünüm"
             >
@@ -185,7 +217,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className={styles.productInfo}>
           <span className={styles.category}>{product.category}</span>
           <h3 className={styles.productName}>
-            <Link href={`/urun/${product.id}`}>{product.name}</Link>
+            <Link href={`/urun/${product.slug || product.id}`}>{product.name}</Link>
           </h3>
           
           {/* Color Options */}
@@ -231,6 +263,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
       )}
+      
+      {/* Quick View Modal */}
+      <QuickViewModal
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+        productId={product.id.toString()}
+      />
     </>
   )
 }

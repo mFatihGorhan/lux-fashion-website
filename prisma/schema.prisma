@@ -101,6 +101,7 @@ model Product {
   primaryImageAlt String?
   hoverImage    String
   hoverImageAlt String?
+  additionalImages Json?   // Array of additional image URLs
   badge         String?   // "Yeni", "Limited Edition", "Son Parçalar"
   colors        Json      // ["#1A1A1A", "#D4B5A0", "#FFFFFF"]
   order         Int       @default(0)

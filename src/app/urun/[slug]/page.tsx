@@ -24,10 +24,11 @@ interface Product {
   primaryImageAlt?: string
   hoverImage: string
   hoverImageAlt?: string
+  additionalImages?: string[]
   category: Category
   featured: boolean
   isActive: boolean
-  colors: string[]
+  colors: string[] | any
   badge?: string
   createdAt: string
 }
@@ -143,13 +144,26 @@ const ProductDetailPage = () => {
     )
   }
 
-  const selectedImage = selectedImageIndex === 0 ? {
-    url: product.primaryImage,
-    altText: product.primaryImageAlt || product.name
-  } : {
-    url: product.hoverImage,
-    altText: product.hoverImageAlt || product.name
-  }
+  // Create array of all available images
+  const allImages = [
+    {
+      url: product.primaryImage,
+      altText: product.primaryImageAlt || product.name
+    },
+    {
+      url: product.hoverImage,
+      altText: product.hoverImageAlt || product.name
+    },
+    ...(product.additionalImages || []).map((url, index) => ({
+      url,
+      altText: `${product.name} - ${index + 3}`
+    }))
+  ].filter((img, index, arr) => 
+    // Remove duplicates and empty URLs
+    img.url && arr.findIndex(item => item.url === img.url) === index
+  )
+
+  const selectedImage = allImages[selectedImageIndex] || allImages[0]
 
   return (
     <div className={styles.page}>
@@ -212,28 +226,21 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Thumbnail Images */}
-            {product.hoverImage && product.hoverImage !== product.primaryImage && (
+            {allImages.length > 1 && (
               <div className={styles.thumbnails}>
-                <button
-                  className={`${styles.thumbnail} ${selectedImageIndex === 0 ? styles.activeThumbnail : ''}`}
-                  onClick={() => handleImageSelect(0)}
-                >
-                  <img
-                    src={product.primaryImage}
-                    alt={product.primaryImageAlt || `${product.name} 1`}
-                    className={styles.thumbnailImage}
-                  />
-                </button>
-                <button
-                  className={`${styles.thumbnail} ${selectedImageIndex === 1 ? styles.activeThumbnail : ''}`}
-                  onClick={() => handleImageSelect(1)}
-                >
-                  <img
-                    src={product.hoverImage}
-                    alt={product.hoverImageAlt || `${product.name} 2`}
-                    className={styles.thumbnailImage}
-                  />
-                </button>
+                {allImages.map((image, index) => (
+                  <button
+                    key={index}
+                    className={`${styles.thumbnail} ${selectedImageIndex === index ? styles.activeThumbnail : ''}`}
+                    onClick={() => handleImageSelect(index)}
+                  >
+                    <img
+                      src={image.url}
+                      alt={image.altText}
+                      className={styles.thumbnailImage}
+                    />
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -265,7 +272,7 @@ const ProductDetailPage = () => {
               <div className={styles.colorSelection}>
                 <h3>Renk Seçimi</h3>
                 <div className={styles.colors}>
-                  {product.colors.map((color, index) => (
+                  {product.colors.map((color: string, index: number) => (
                     <button
                       key={index}
                       className={`${styles.colorOption} ${

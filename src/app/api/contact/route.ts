@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { sendContactFormEmail } from '@/lib/email'
 
 const contactSchema = z.object({
   name: z.string().min(1, 'İsim alanı zorunludur').max(100, 'İsim çok uzun'),
@@ -28,8 +29,19 @@ export async function POST(request: Request) {
       }
     })
 
-    // TODO: Send email notification to admin (can be implemented later)
-    // await sendEmailNotification(contactSubmission)
+    // Send email notification to admin
+    try {
+      await sendContactFormEmail({
+        name: validatedData.name,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        subject: validatedData.subject,
+        message: validatedData.message,
+      })
+    } catch (emailError) {
+      console.error('Email notification failed:', emailError)
+      // Don't fail the whole request if email fails
+    }
 
     return NextResponse.json({ 
       message: 'Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.',

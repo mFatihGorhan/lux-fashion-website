@@ -48,6 +48,16 @@
   --radius-xl: 16px;
   --radius-full: 9999px;
   
+  /* Font Sizes */
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-base: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
+  --font-2xl: 1.5rem;
+  --font-3xl: 2rem;
+  --font-4xl: 2.5rem;
+  
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -80,6 +90,8 @@ body {
   background-color: var(--background);
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* Typography */
@@ -335,6 +347,92 @@ p {
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  transition: all 0.1s ease;
+}
+
+/* Mobile Responsive Utilities */
+@media (max-width: 768px) {
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  .mobile-show {
+    display: block !important;
+  }
+  
+  .mobile-center {
+    text-align: center !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  /* Disable complex animations on mobile for better performance */
+  .no-mobile-animation {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Touch-friendly sizing */
+  .mobile-touch {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile spacing adjustments */
+  .mobile-padding-sm {
+    padding: var(--space-sm) !important;
+  }
+  
+  .mobile-padding-md {
+    padding: var(--space-md) !important;
+  }
+  
+  .mobile-margin-sm {
+    margin: var(--space-sm) !important;
+  }
+  
+  /* Improved button hover states for mobile */
+  .btn-primary:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+/* High DPI/Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .retina-border {
+    border-width: 0.5px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for better accessibility */
+:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Responsive Grid */

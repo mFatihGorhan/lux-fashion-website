@@ -3,6 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save } from 'lucide-react'
+import dynamic from 'next/dynamic'
+
+// Dynamically import RichTextEditor to avoid SSR issues
+const RichTextEditor = dynamic(() => import('@/components/admin/ui/RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-96 bg-gray-100 rounded-lg animate-pulse" />
+})
 
 interface Category {
   id: string
@@ -272,21 +279,19 @@ export default function NewBlogPostPage() {
                 }}>
                   İçerik *
                 </label>
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => handleInputChange('content', e.target.value)}
-                  rows={10}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    backgroundColor: '#374151',
-                    border: '1px solid #4B5563',
-                    borderRadius: '0.5rem',
-                    color: 'white',
-                    resize: 'vertical'
-                  }}
-                  required
-                />
+                <div style={{
+                  backgroundColor: 'white',
+                  borderRadius: '0.5rem',
+                  padding: '1rem',
+                  border: '1px solid #4B5563'
+                }}>
+                  <RichTextEditor
+                    value={formData.content}
+                    onChange={(content) => handleInputChange('content', content)}
+                    placeholder="Blog yazısının içeriğini buraya yazın..."
+                    height={400}
+                  />
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>

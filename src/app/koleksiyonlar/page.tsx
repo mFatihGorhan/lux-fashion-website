@@ -1,19 +1,27 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import { ChevronDown, Grid, List } from 'lucide-react'
-import ProductCard from '@/components/ui/ProductCard'
 import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton'
 import PageErrorBoundary from '@/components/PageErrorBoundary'
 import styles from './collections.module.css'
+
+// Dynamically import ProductCard to avoid hydration issues
+const ProductCard = dynamic(() => import('@/components/ui/ProductCard'), {
+  ssr: false,
+  loading: () => <ProductCardSkeleton viewMode="grid" count={1} />
+})
 
 interface Product {
   id: string
   name: string
   slug: string
   price: number
-  primaryImage?: string
+  primaryImage: string
+  primaryImageAlt?: string
   hoverImage?: string
+  hoverImageAlt?: string
   category: {
     id: string
     name: string
@@ -88,31 +96,31 @@ function CollectionsContent() {
 
   return (
     <main className={styles.main}>
-      {/* Hero Section */}
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>Koleksiyonlarımız</h1>
-          <p className={styles.heroSubtitle}>
+      {/* Page Header */}
+      <section className={styles.pageHeader}>
+        <div className={styles.headerContent}>
+          <h1 className={styles.title}>Koleksiyonlarımız</h1>
+          <p className={styles.subtitle}>
             Özgün tasarımları ve zarafeti buluşturan özel koleksiyonlarımızı keşfedin
           </p>
         </div>
       </section>
 
-      {/* Filters and Content */}
-      <section className={styles.content}>
+      {/* Filters Bar */}
+      <div className={styles.filtersBar}>
         <div className={styles.container}>
-          {/* Filters */}
-          <div className={styles.filters}>
-            <div className={styles.filterGroup}>
-              <label htmlFor="collection-select" className={styles.filterLabel}>
-                Koleksiyon:
-              </label>
-              <div className={styles.selectWrapper}>
+          <div className={styles.filtersContent}>
+            <div className={styles.resultsInfo}>
+              <p>{loading ? 'Yükleniyor...' : `${products.length} ürün gösteriliyor`}</p>
+            </div>
+
+            <div className={styles.viewControls}>
+              {/* Filter */}
+              <div className={styles.sortDropdown}>
                 <select
-                  id="collection-select"
                   value={selectedCollection}
                   onChange={(e) => setSelectedCollection(e.target.value)}
-                  className={styles.select}
+                  className={styles.sortSelect}
                 >
                   {collections.map(collection => (
                     <option key={collection.id} value={collection.slug}>
@@ -120,65 +128,78 @@ function CollectionsContent() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className={styles.selectIcon} size={20} />
+                <ChevronDown size={16} className={styles.dropdownIcon} />
+              </div>
+
+              {/* View Mode */}
+              <div className={styles.viewModeButtons}>
+                <button
+                  className={`${styles.viewModeButton} ${viewMode === 'grid' ? styles.active : ''}`}
+                  onClick={() => setViewMode('grid')}
+                  aria-label="Grid görünümü"
+                >
+                  <Grid size={18} />
+                </button>
+                <button
+                  className={`${styles.viewModeButton} ${viewMode === 'list' ? styles.active : ''}`}
+                  onClick={() => setViewMode('list')}
+                  aria-label="Liste görünümü"
+                >
+                  <List size={18} />
+                </button>
               </div>
             </div>
-
-            <div className={styles.viewToggle}>
-              <button
-                className={`${styles.viewButton} ${viewMode === 'grid' ? styles.active : ''}`}
-                onClick={() => setViewMode('grid')}
-                aria-label="Grid view"
-              >
-                <Grid size={20} />
-              </button>
-              <button
-                className={`${styles.viewButton} ${viewMode === 'list' ? styles.active : ''}`}
-                onClick={() => setViewMode('list')}
-                aria-label="List view"
-              >
-                <List size={20} />
-              </button>
-            </div>
           </div>
+        </div>
+      </div>
 
-          {/* Results Info */}
-          <div className={styles.resultsInfo}>
-            <p className={styles.resultsCount}>
-              {loading ? 'Yükleniyor...' : `${products.length} ürün bulundu`}
-            </p>
+      {/* Products Section */}
+      <section className={styles.productsSection}>
+        <div className={styles.container}>
+          <div className={`${styles.productsGrid} ${viewMode === 'list' ? styles.listView : ''}`}>
+            {loading ? (
+              <ProductCardSkeleton viewMode={viewMode} count={8} />
+            ) : products.length === 0 ? (
+              <div className={styles.noResults}>
+                <p>Henüz ürün bulunmamaktadır.</p>
+              </div>
+            ) : (
+              products.map(product => {
+                // Ensure image URLs are valid
+                const cleanPrimaryImage = product.primaryImage?.startsWith('http') 
+                  ? product.primaryImage 
+                  : product.primaryImage?.startsWith('/') 
+                    ? product.primaryImage 
+                    : '/images/placeholder-product.svg'
+                
+                const cleanHoverImage = product.hoverImage?.startsWith('http') 
+                  ? product.hoverImage 
+                  : product.hoverImage?.startsWith('/') 
+                    ? product.hoverImage 
+                    : cleanPrimaryImage
+
+                return (
+                  <ProductCard
+                    key={product.id}
+                    product={{
+                      id: parseInt(product.id) || 0,
+                      slug: product.slug || `product-${product.id}`,
+                      name: product.name || 'Ürün Adı',
+                      category: product.category?.name || 'Kategori',
+                      price: `${(product.price || 0).toLocaleString('tr-TR')} TL`,
+                      images: {
+                        primary: cleanPrimaryImage,
+                        hover: cleanHoverImage
+                      },
+                      colors: Array.isArray(product.colors) ? product.colors : ['#1A1A1A'],
+                      badge: product.badge
+                    }}
+                    viewMode={viewMode}
+                  />
+                )
+              })
+            )}
           </div>
-
-          {/* Products Grid */}
-          {loading ? (
-            <ProductCardSkeleton viewMode={viewMode} count={8} />
-          ) : products.length === 0 ? (
-            <div className={styles.emptyState}>
-              <h3>Henüz ürün bulunmuyor</h3>
-              <p>Bu koleksiyonda henüz ürün bulunmamaktadır.</p>
-            </div>
-          ) : (
-            <div className={`${styles.productsGrid} ${viewMode === 'list' ? styles.listView : ''}`}>
-              {products.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={{
-                    id: parseInt(product.id) || 0,
-                    name: product.name,
-                    category: product.category.name,
-                    price: `${product.price.toLocaleString('tr-TR')} TL`,
-                    images: {
-                      primary: product.primaryImage || '/images/placeholder-product.svg',
-                      hover: product.hoverImage || product.primaryImage || '/images/placeholder-product.svg'
-                    },
-                    colors: product.colors || [],
-                    badge: product.badge
-                  }}
-                  viewMode={viewMode}
-                />
-              ))}
-            </div>
-          )}
         </div>
       </section>
     </main>

@@ -9,15 +9,8 @@ import ProductCardSkeleton from '@/components/ui/ProductCardSkeleton'
 import PageErrorBoundary from '@/components/PageErrorBoundary'
 import styles from './ProductsPage.module.css'
 
-interface ProductImage {
-  id: number
-  url: string
-  altText?: string
-  isPrimary: boolean
-}
-
 interface Category {
-  id: number
+  id: string
   name: string
   slug: string
 }
@@ -30,11 +23,15 @@ interface Product {
   price: number
   originalPrice?: number
   category: Category
-  images: ProductImage[]
+  primaryImage: string
+  primaryImageAlt?: string
+  hoverImage: string
+  hoverImageAlt?: string
   featured: boolean
   isActive: boolean
-  stock: number
+  stock?: number
   colors?: string[]
+  badge?: string
 }
 
 function ProductsContent() {
@@ -127,7 +124,8 @@ function ProductsContent() {
     })
 
   const handleQuickView = (productId: string) => {
-    // TODO: Implement quick view modal
+    // Quick view is implemented in ProductCard component
+    console.log('Quick view for product:', productId)
   }
 
   const formatPrice = (price: number) => {
@@ -231,8 +229,9 @@ function ProductsContent() {
         ) : (
           <div className={`${styles.productsGrid} ${viewMode === 'list' ? styles.listView : ''}`}>
             {filteredProducts.map((product) => {
-              const primaryImage = product.images.find(img => img.isPrimary)
-              const secondaryImage = product.images.find(img => !img.isPrimary)
+              // Use direct image fields from product
+              const primaryImage = product.primaryImage ? { url: product.primaryImage, altText: product.primaryImageAlt } : null
+              const secondaryImage = product.hoverImage ? { url: product.hoverImage, altText: product.hoverImageAlt } : null
               
               return (
                 <article
@@ -248,10 +247,10 @@ function ProductsContent() {
                   {product.originalPrice && (
                     <span className={`${styles.badge} ${styles.saleBadge}`}>İndirim</span>
                   )}
-                  {product.stock < 5 && product.stock > 0 && (
+                  {product.stock && product.stock < 5 && product.stock > 0 && (
                     <span className={`${styles.badge} ${styles.stockBadge}`}>Son Parçalar</span>
                   )}
-                  {product.stock === 0 && (
+                  {product.stock !== undefined && product.stock === 0 && (
                     <span className={`${styles.badge} ${styles.outOfStockBadge}`}>Stokta Yok</span>
                   )}
 
@@ -369,9 +368,9 @@ function ProductsContent() {
 
                     {/* Stock Info */}
                     <div className={styles.stockInfo}>
-                      {product.stock === 0 ? (
+                      {product.stock !== undefined && product.stock === 0 ? (
                         <span className={styles.outOfStock}>Stokta Yok</span>
-                      ) : product.stock < 5 ? (
+                      ) : product.stock && product.stock < 5 ? (
                         <span className={styles.lowStock}>Son {product.stock} parça</span>
                       ) : (
                         <span className={styles.inStock}>Stokta</span>

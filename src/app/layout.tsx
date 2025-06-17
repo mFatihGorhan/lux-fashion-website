@@ -9,10 +9,12 @@ import { WishlistProvider } from '@/contexts/WishlistContext'
 import WhatsAppButtonWrapper from '@/components/WhatsAppButtonWrapper'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { PageLoading } from '@/components/ui/LoadingSpinner'
+import ScrollIndicator from '@/components/ui/ScrollIndicator'
 import { generatePageMetadata, generateStructuredData } from '@/lib/seo'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
+import GoogleAnalytics, { GoogleAnalyticsScript } from '@/components/Analytics'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -40,7 +42,7 @@ export default function RootLayout({
   const websiteSchema = generateStructuredData('website', {})
 
   return (
-    <html lang="tr">
+    <html lang="tr" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -54,8 +56,9 @@ export default function RootLayout({
             __html: JSON.stringify(websiteSchema)
           }}
         />
+        <GoogleAnalyticsScript />
       </head>
-      <body className={`${inter.variable} ${playfair.variable}`}>
+      <body className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
         <ErrorBoundary>
           <SessionProvider>
             <WishlistProvider>
@@ -65,6 +68,8 @@ export default function RootLayout({
               </Suspense>
               <Footer />
               <WhatsAppButtonWrapper />
+              <ScrollIndicator />
+              <GoogleAnalytics />
             </WishlistProvider>
           </SessionProvider>
           <PerformanceMonitor />

@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
         price: data.price,
         primaryImage: data.primaryImage || '',
         hoverImage: data.hoverImage || '',
+        additionalImages: data.additionalImages || [],
         badge: data.badge,
         colors: data.colors || [],
         featured: data.featured || false,
