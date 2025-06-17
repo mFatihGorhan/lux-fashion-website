@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { initGA, trackPageView, trackScrollDepth, trackTimeOnPage } from '@/lib/analytics'
 
-export default function Analytics() {
+function AnalyticsComponent() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -52,6 +52,14 @@ export default function Analytics() {
   }, [pathname, searchParams])
 
   return null
+}
+
+export default function Analytics() {
+  return (
+    <Suspense fallback={null}>
+      <AnalyticsComponent />
+    </Suspense>
+  )
 }
 
 // Google Analytics Script Component
