@@ -68,6 +68,7 @@ const menuItems = [
     submenu: [
       { label: 'Site Ayarlari', href: '/admin/settings' },
       { label: 'SEO Yonetimi', href: '/admin/seo' },
+      { label: 'Footer Yonetimi', href: '/admin/footer' },
     ]
   },
 ]

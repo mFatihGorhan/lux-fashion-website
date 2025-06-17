@@ -256,3 +256,21 @@ model NewsletterSubscriber {
   @@index([email])
   @@index([isActive])
 }
+
+// Footer İçeriği
+model FooterContent {
+  id            String    @id @default(cuid())
+  brandTitle    String    @default("LUXE FASHION")
+  brandDescription String @db.Text
+  phone         String
+  email         String
+  address       String
+  workingHours  String
+  instagramUrl  String?
+  pinterestUrl  String?
+  linkedinUrl   String?
+  copyrightText String
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
