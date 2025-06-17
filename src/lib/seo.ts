@@ -169,7 +169,7 @@ export async function generateBlogMetadata(slug: string): Promise<Metadata> {
       openGraph: {
         title,
         description,
-        images: post.featuredImage ? [{ url: post.featuredImage }] : undefined,
+        images: post.coverImage ? [{ url: post.coverImage }] : undefined,
         type: 'article',
         locale: 'tr_TR',
         siteName: DEFAULT_SEO.siteName,
@@ -181,7 +181,7 @@ export async function generateBlogMetadata(slug: string): Promise<Metadata> {
         card: 'summary_large_image',
         title,
         description,
-        images: post.featuredImage ? [post.featuredImage] : undefined
+        images: post.coverImage ? [post.coverImage] : undefined
       },
       alternates: {
         canonical: `${DEFAULT_SEO.siteUrl}/blog/${post.slug}`
