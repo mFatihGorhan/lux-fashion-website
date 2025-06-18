@@ -199,7 +199,7 @@ const Footer = () => {
               <h4 className={styles.columnTitle}>Müşteri Hizmetleri</h4>
               <ul className={styles.linksList}>
                 <li>
-                  <Link href="/sikca-sorulan-sorular" className={styles.footerLink}>
+                  <Link href="/sss" className={styles.footerLink}>
                     Sıkça Sorulan Sorular
                   </Link>
                 </li>
