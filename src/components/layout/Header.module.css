@@ -42,7 +42,7 @@
   position: relative;
   height: 1.3em;
   overflow: hidden;
-  text-align: center;
+  text-align: left;
   flex: 1;
   white-space: nowrap;
 }
@@ -550,14 +550,13 @@
 
   .topBarContainer {
     padding: 0 1rem;
-    flex-direction: column;
     gap: 0.5rem;
   }
 
   .topBarText {
     font-size: 0.75rem;
     white-space: normal;
-    text-align: center;
+    text-align: left;
     line-height: 1.2;
   }
 
