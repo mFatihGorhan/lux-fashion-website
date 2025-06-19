@@ -38,6 +38,25 @@
   font-weight: 300;
   text-transform: uppercase;
   opacity: 0.9;
+  position: relative;
+  height: 1.2em;
+  overflow: hidden;
+}
+
+.rotatingText {
+  display: inline-block;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .topBarRight {

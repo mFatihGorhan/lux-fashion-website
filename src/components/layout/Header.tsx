@@ -10,6 +10,14 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [currentSloganIndex, setCurrentSloganIndex] = useState(0)
+
+  const slogans = [
+    "Özel tasarımlar, sınırlı sayıda üretim",
+    "Eşsiz tarzınızı yansıtan koleksiyonlar", 
+    "Lüksün yeni adresi, zarafetin simgesi",
+    "Kalite ve estetiği buluşturan moda"
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +27,17 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Slogan rotation effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSloganIndex((prevIndex) => 
+        (prevIndex + 1) % slogans.length
+      )
+    }, 4000) // Change every 4 seconds
+
+    return () => clearInterval(interval)
+  }, [slogans.length])
 
   const navItems = [
     { name: 'Ana Sayfa', href: '/' },
@@ -34,7 +53,12 @@ const Header = () => {
       <div className={styles.topBar}>
         <div className={styles.topBarContainer}>
           <p className={styles.topBarText}>
-            Özel tasarımlar, sınırlı sayıda üretim
+            <span 
+              key={currentSloganIndex}
+              className={styles.rotatingText}
+            >
+              {slogans[currentSloganIndex]}
+            </span>
           </p>
           <div className={styles.topBarRight}>
             <a href="tel:+905555555555" className={styles.phoneLink}>
